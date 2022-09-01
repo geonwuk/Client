@@ -1,52 +1,28 @@
 #include<iostream>
-#include<vector>
-#include<algorithm>
-#include"Client.h"
-#include "ClientManager.h"
+#include "Display.h"
+#include "QueryClient.h"
 using namespace std;
 
-
 int main() {
-	vector<Client> client_list;
+	//for_each(client_list.begin(), client_list.end(), [](Client c) {cout << c << endl; });
+	//void addClient(string name, string phone_number = "NONE", string address = "NONE");
+	ClientManager cm;
+	QueryClient qc{ cm };
+	
+	Display a1{ "고객관리프로그램"};
+	Display b1{ "고객정보관리"};
+	Display b2{ "상품정보관리"};
+	a1.addChild({ &b1, &b2 });
+	Display c1{ "고객추가",  query(qc, &QueryClient::QueryAddClient) };
+	Display c2{ "고객삭제", query(qc, &QueryClient::QueryEraseClient) };
+	Display c3{ "고객조회",query(qc,&QueryClient::QueryShowClient) };
+	b1.addChild({ &c1,&c2,&c3 });
 
-
-	client_list.emplace_back("Ken", "01012341234", "ABCABCABC");
-	client_list.emplace_back("Ken2", "01022233333", "DEF");
-	client_list.emplace_back("Ken3", "558887777", "1axcv");
-
-
-	for_each(client_list.begin(), client_list.end(), [](Client c) {cout << c << endl; });
-	bool go = true;
-
+	int go = 1;
 	do {
-		int selection;
-		cout << "고객관리프로그램" << endl;
-		cout << "1. 고객정보관리" << endl;
-		cout << "2. 상품정보관리" << endl;
-		cout << "3. 쇼핑정보관리" << endl;
-		cin >> selection;
-
-		switch (selection)
-		{
-		case 1:
-			
+		go = a1.run();
+	} while (go>=0);
 
 
-			break;
-		case 2:
-
-			break;
-		case 3:
-
-			break;
-
-
-		default:
-			break;
-		}
-
-	} while (go);
-
-
-	cout << "hi" << endl;
+	cout << "end" << endl;
 }
