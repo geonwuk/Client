@@ -2,20 +2,23 @@
 #include "Display.h"
 #include "QueryClient.h"
 #include "QueryProduct.h"
+#include "QueryOrder.h"
 using namespace std;
 
 int main() {
-	//for_each(client_list.begin(), client_list.end(), [](Client c) {cout << c << endl; });
-	//void addClient(string name, string phone_number = "NONE", string address = "NONE");
 	ClientManager cm;
 	ProductManager pm;
+	OrderManager om{ cm,pm };
+
 	QueryClient qc{ cm };
 	QueryProduct qp{ pm };
+	QueryOrder qo{ om };
 
 	Display a1{ "고객관리프로그램"};
 	Display b1{ "고객정보관리"};
 	Display b2{ "상품정보관리"};
-	a1.addChild({ &b1, &b2 });
+	Display b3{ "오더관리" };
+	a1.addChild({ &b1, &b2, &b3 });
 
 	Display c1{ "고객추가",  query(qc, &QueryClient::QueryAddClient) };
 	Display c2{ "고객삭제", query(qc, &QueryClient::QueryEraseClient) };
@@ -27,6 +30,9 @@ int main() {
 	Display d3{ "상품조회", query(qp, &QueryProduct::QueryShowProduct) };
 	b2.addChild({ &d1,&d2,&d3 });
 
+	Display e1 {"오더 추가", query(qo, &QueryOrder::)}
+
+	b3.addChild
 
 	int go = 1;
 	do {

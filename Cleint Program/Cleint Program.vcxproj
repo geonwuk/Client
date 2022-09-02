@@ -143,18 +143,22 @@
     <ClCompile Include="ClientManager.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OrderManager.cpp" />
     <ClCompile Include="Product.cpp" />
     <ClCompile Include="ProductManager.cpp" />
     <ClCompile Include="QueryClient.cpp" />
+    <ClCompile Include="QueryOrder.cpp" />
     <ClCompile Include="QueryProduct.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientManager.h" />
     <ClInclude Include="Display.h" />
+    <ClInclude Include="OrderManager.h" />
     <ClInclude Include="Product.h" />
     <ClInclude Include="ProductManager.h" />
     <ClInclude Include="QueryClient.h" />
+    <ClInclude Include="QueryOrder.h" />
     <ClInclude Include="QueryProduct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

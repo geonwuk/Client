@@ -5,7 +5,6 @@
 #include <iostream>
 using std::string;
 using std::initializer_list;
-using std::endl;
 class Query {
 public:
 	virtual void getInput() = 0;
@@ -14,28 +13,28 @@ public:
 template<typename C, typename T>
 class print : public Query {
 public:
-	C& c;
+	C c;
 	T t;
-	print(C& c_, T t_) :t{ t_ }, c{ c_ } {}
+	print(C c_, T t_) :t{ t_ }, c{ c_ } {}
 	void getInput() {
 		(c.*t)();
 	}
 
 };
 template<typename C, typename T>
-print<C,T> query(C& c_,T t_) { return print<C,T>(c_, t_); }
+print<C,T> query(C c_,T t_) { return print<C,T>(c_, t_); }
 
 class emptyQuery : public Query {
 	void getInput() {
-		std::cerr << "error" << endl;
+		std::cerr << "error" << std::endl;
 	}
 };
 
 class Display{
 public:
-	Display(string text, Query& in, initializer_list<Display*> childs = {}) :text{ text }, in{ in }, childs{ childs }{}
-	Display(string text, Query&& in, initializer_list<Display*> childs = {}) :text{ text }, in{ in }, childs{ childs }{}
-	Display(string text, initializer_list<Display*> childs = {}) :text{ text }, childs{ childs }, in{ empty } {}
+	Display(string text, Query& in) :text{ text }, in{ in } {}
+	Display(string text, Query&& in) :text{ text }, in{ in } {}
+	Display(string text) :text{ text }, in{ empty } {}
 	
 	void addChild(initializer_list<Display*>);
 	int run() const;

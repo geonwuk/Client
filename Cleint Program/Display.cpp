@@ -14,15 +14,12 @@ void Display::showMenu(const Display& disp) const {
 	}
 }
 
-
-
 void Display::addChild(initializer_list<Display*> d)
 {
 	for (auto i : d) {
 		childs.push_back(&(*i));
 	}
 }
-
 
 int Display::run() const
 {
@@ -49,8 +46,11 @@ middle:
 	if (selection <= 0)
 		return { -1,false };
 	if (selection > childs.size()) {
-		cout << selection << "은 선택 불가" << endl;//todo 수정
-		goto start;
+		system("cls");
+		cout << selection << "은 선택 불가" << endl<<endl;
+		showMenu(*this);
+		cin >> selection;
+		goto middle;
 	}
 	//test
 	--selection;

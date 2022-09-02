@@ -25,6 +25,12 @@ bool ClientManager::eraseClient(string ID){
 	}
 }
 
+const Client& ClientManager::findClient(const string ID) const
+{
+	auto it = clients_by_string.find(ID);
+	return *(it->second);
+}
+
 const map<unsigned int, Client>& ClientManager::getCleints() const
 {
 	return clients;

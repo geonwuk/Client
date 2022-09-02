@@ -39,6 +39,12 @@
     <ClCompile Include="QueryProduct.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="OrderManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryOrder.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -60,6 +66,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="QueryProduct.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryOrder.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

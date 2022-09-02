@@ -15,6 +15,7 @@ public:
 	//(unsigned int id, string ID, string name, string phone_number = "NONE", string address = "NONE", Status status = Status::active)
 	void addClient(string ID, string name, string phone_number = "NONE", string address = "NONE");
 	bool eraseClient(string ID);
+	const Client& findClient(const string ID) const;
 	void test() {}
 
 	const map< unsigned int, Client >& getCleints() const;

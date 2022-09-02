@@ -12,10 +12,6 @@ public:
 
 	const map< unsigned int, Product >& getCleints() const;
 
-	//Product(unsigned int id, unsigned int seq, string name, double price, double discounted_ratio, tm date) :
-	//	id{ id }, seq{ seq }, name{ name }, price{ price }, discounted_ratio{ discounted_ratio }, registered_date{ date }{}
-
-
 private:
 	unsigned int product_id;
 	map < unsigned int, Product > products;
