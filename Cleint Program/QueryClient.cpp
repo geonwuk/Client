@@ -43,7 +43,7 @@ void QueryClient::QueryShowClient()
 {
 	auto m = cm.getCleints();
 	for (auto& i : m) {
-		cout << std::cref(i.second) << endl;;
+		cout << i.second << endl;;
 	}
 	cout << endl;
 }

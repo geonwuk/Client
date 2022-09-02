@@ -14,10 +14,10 @@ void ClientManager::addClient(string ID, string name, string phone_number, strin
 }
 
 bool ClientManager::eraseClient(string ID){
-	auto re = clients_by_string.find(ID);
-	if (re != clients_by_string.end()) {
-		clients.erase(re->second->getId());
-		clients_by_string.erase(re);
+	auto it = clients_by_string.find(ID);
+	if (it != clients_by_string.end()) {
+		clients.erase(it->second->getId());
+		clients_by_string.erase(it);
 		return true;
 	}
 	else {
