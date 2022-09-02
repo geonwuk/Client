@@ -52,6 +52,7 @@ middle:
 		cout << selection << "은 선택 불가" << endl;//todo 수정
 		goto start;
 	}
+	//test
 	--selection;
 	bool last_child;
 	std::tie(selection, last_child) = childs[selection]->show(*this);
