@@ -31,15 +31,13 @@ namespace PM {
 	};
 
 	struct NoProduct : public Product { NoProduct() {} };
-	static const NoProduct no_product;
+	const NoProduct no_product{};
 
 	bool operator== (const Product& p, const NoProduct&);
 	
 
 	class ProductManager
 	{
-	public:
-		friend bool operator!= (const Product& p, const NoProduct& np);
 	private:
 		map < string, Product* > products_by_string;
 

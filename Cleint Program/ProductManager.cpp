@@ -2,10 +2,11 @@
 using namespace std;
 using namespace PM;
 
-const NoProduct no_product{};
+//static const NoProduct no_product{};
 
 bool PM::operator== (const Product& p, const NoProduct&) {
-	if (&p == &PM::no_product)
+	const Product& np{(no_product) };
+	if (&p == &np)
 		return true;
 	else
 		return false;

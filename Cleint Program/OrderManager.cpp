@@ -12,12 +12,12 @@ bool OrderManager::addOrder(string client_ID, const string& product_ID)
 	localtime_s(&local_time, &base_time);
 	order.date = local_time;
 
-	const PM::Product found = pm.findProduct(product_ID);
-	if (found == PM::no_product)
+	const Product& found = pm.findProduct(product_ID);
+	if (found == no_product)
 		return false;
 
 	auto itr = purchased_products.find(product_ID);
-	if (itr != purchased_products.end()) {
+	if (itr == purchased_products.end()) {
 		order.products.emplace_back(new Product{ found });
 		purchased_products.emplace(product_ID, order.products.back());
 	}

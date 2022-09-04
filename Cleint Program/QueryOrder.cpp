@@ -23,41 +23,40 @@ void QueryOrder::QueryShowOrder()
 	cin >> client_id;
 	auto orders = om.getOrders(client_id);
 	int idx = 1;
-	vector<int> x;
-	x.begin();
-	for (auto i = orders.begin(); i != orders.end(); ++i) {
-		//cout << "#" << idx++ << "order" << endl;
-		//for (auto j : i->products) {
-		//	cout << j;
-		//}
-		//cout << endl;
+
+	for (auto i : orders) {
+		cout << "#" << idx++ << "order" << endl;
+		for (auto j : i->products) {
+			cout << *j.get();
+		}
+		cout << endl;
 	}
 	cout << endl;
 }
 
 void QueryOrder::QueryAddOrder() {
-	//string client_ID;
-	//cout << "Cleint ID: ";
-	//cin >> client_ID;
+	string client_ID;
+	cout << "Cleint ID: ";
+	cin >> client_ID;
 
-	//string product_IDs;
-	//cout << "Product IDs (use commas): ";
-	//cin >> product_IDs;
+	string product_IDs;
+	cout << "Product IDs (use commas): ";
+	cin >> product_IDs;
 
-	//vector<string> products_vector;
-	//auto begIdx = product_IDs.find_first_not_of(',');
-	//while (begIdx != string::npos) {
-	//	auto endIdx = product_IDs.find_first_of(',' , begIdx);
-	//	if (endIdx == string::npos) {
-	//		endIdx = product_IDs.length();
-	//	}
-	//	//products_vector.emplace_back(product_IDs.substr(begIdx,endIdx-begIdx));
-	//	begIdx = product_IDs.find_first_not_of(',');
-	//}
+	vector<string> products_vector;
+	auto begIdx = product_IDs.find_first_not_of(',');
+	while (begIdx != string::npos) {
+		auto endIdx = product_IDs.find_first_of(',' , begIdx);
+		if (endIdx == string::npos) {
+			endIdx = product_IDs.length();
+		}
+		products_vector.emplace_back(product_IDs.substr(begIdx,endIdx-begIdx));
+		begIdx = product_IDs.find_first_not_of(',', endIdx);
+	}
 
-	//for (auto i : products_vector) {
-	//	om.addOrder(client_ID, i);
-	//}
+	for (auto i : products_vector) {
+		om.addOrder(client_ID, i);
+	}
 }
 
 
