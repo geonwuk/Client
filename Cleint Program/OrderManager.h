@@ -4,36 +4,75 @@
 #include <string>
 #include <map>
 #include <memory>
-#include "Product.h"
+
 #include "ProductManager.h"
 #include "ClientManager.h"
-using product_ptr = std::shared_ptr<Product>;
-
-
+using namespace std;
+using namespace PM;
 using std::string;
 using std::vector;
-class OrderManager
-{
-public:
-	OrderManager(ClientManager& cm, ProductManager& pm) :cm{ cm }, pm{ pm }{}
-private:
 
-public:
-	struct Order {
-		string client_ID;
-		vector<product_ptr> products;
-		std::tm date;
+
+namespace OM {
+	struct OrderIterator;
+	class OrderManager
+	{
+	public:
+		OrderManager(ClientManager& cm, ProductManager& pm) :cm{ cm }, pm{ pm }{}
+
+	public:
+		using product_sptr = std::shared_ptr<Product>;
+		struct Order {
+			string client_ID;
+			vector<product_sptr> products;
+			std::tm date{};
+		};
+	private:
+		const ProductManager& pm;
+		const ClientManager& cm;
+
+		unsigned int order_id = 0;
+		std::map<unsigned int, Order> orders;
+		std::multimap<string, Order*> orders_by_client_id;
+		map<string, std::weak_ptr<Product>> purchased_products;
+		
+	public:
+		bool addOrder(string client_ID, const string& product_ID);
+		OM::OrderIterator getOrders(const string& client_ID);
 	};
-	void addOrder(string client_ID, const vector<Product>& products);
-	const std::map<unsigned int, Order>& getOrders() const;
-private:
-	const ProductManager& pm;
-	const ClientManager& cm;
 
+	struct itr {
+		itr() {}
+		std::multimap<string, OrderManager::Order*>::const_iterator ptr;
+		itr(std::multimap<string, OrderManager::Order*>::const_iterator p) :ptr{ p } {}
+		const OrderManager::Order* operator*() const {
+			return ptr->second;
+		}
+		void operator++() {
+			ptr++;
+		}
+		bool operator!=(itr b) {
+			auto re = (ptr) != (b.ptr);
+			return re;
+		}
+	};
+	struct OrderIterator {
+	public:
+		//decltype(orders_by_client_id)::iterator;
+		OrderIterator() {}
+		OrderIterator(std::multimap<string, OrderManager::Order*>::const_iterator b, std::multimap<string, OrderManager::Order*>::const_iterator e) : st{ b }, ed{ e } {}
+	
 
-	std::map<unsigned int, Order> orders;
+		itr st, ed;
 
-	using product_id = unsigned int;
-	map<product_id, product_ptr> purchased_products;
-};
+		itr begin() {
+			return (st);
+		}
+		itr end() {
+			return (ed);
+		}
+	};
 
+}
+
+using itr_type = std::multimap<string, OM::OrderManager::Order*>::const_iterator;

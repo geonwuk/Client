@@ -1,11 +1,11 @@
 #include "ClientManager.h"
 
 unsigned int ClientManager::client_id = 0;
-
-void ClientManager::search_field::test() {
-//	Name s { string{"name"}, &Client::getName };
-	//string (Client::*x)()  = &Client::getName;
-}
+//
+//void ClientManager::search_field::test() {
+////	Name s { string{"name"}, &Client::getName };
+//	//string (Client::*x)()  = &Client::getName;
+//}
 
 void ClientManager::addClient(string ID, string name, string phone_number, string address) {
 	auto inserted = clients.emplace( client_id, Client{ client_id, ID, name, phone_number, address } );

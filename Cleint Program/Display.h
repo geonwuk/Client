@@ -24,6 +24,10 @@ public:
 template<typename C, typename T>
 print<C,T> query(C c_,T t_) { return print<C,T>(c_, t_); }
 
+//
+//template<typename C, typename T>
+//print<C, T> query2(C::T* t_) { return print<C, T>(c_, t_); }
+
 class emptyQuery : public Query {
 	void getInput() {
 		std::cerr << "error" << std::endl;
@@ -32,7 +36,7 @@ class emptyQuery : public Query {
 
 class Display{
 public:
-	Display(string text, Query& in) :text{ text }, in{ in } {}
+	Display(string text, Query& in) :text{ text }, in{ in } {} //const query&?
 	Display(string text, Query&& in) :text{ text }, in{ in } {}
 	Display(string text) :text{ text }, in{ empty } {}
 	

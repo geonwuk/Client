@@ -2,6 +2,7 @@
 #include "ProductManager.h"
 #include <iostream>
 using std::cout;
+using namespace PM;
 inline std::ostream& operator<< (std::ostream& os, const tm& p) {
 	cout << p.tm_year + 1900 << "³â " << p.tm_mon + 1 << "¿ù " << p.tm_mday << "ÀÏ";
 	return os;

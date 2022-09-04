@@ -1,5 +1,17 @@
 #include "ProductManager.h"
 using namespace std;
+using namespace PM;
+
+const NoProduct no_product{};
+
+bool PM::operator== (const Product& p, const NoProduct&) {
+	if (&p == &PM::no_product)
+		return true;
+	else
+		return false;
+}
+
+
 void ProductManager::addProduct(string ID, string name, double price, double discounted_ratio)
 {
 	time_t base_time = time(nullptr);
@@ -23,7 +35,18 @@ bool ProductManager::eraseProduct(string ID)
 	}
 }
 
-const map<unsigned int, Product>& ProductManager::getCleints() const
+const Product& ProductManager::findProduct(const string& ID) const
+{
+	auto it = products_by_string.find(ID);
+	if (it == products_by_string.end()) {
+		return no_product;
+	}
+	else {
+		return *(it->second);
+	}
+}
+
+const map<unsigned int, Product>& ProductManager::getProducts() const
 {
 	return products;
 }

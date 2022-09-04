@@ -144,7 +144,6 @@
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OrderManager.cpp" />
-    <ClCompile Include="Product.cpp" />
     <ClCompile Include="ProductManager.cpp" />
     <ClCompile Include="QueryClient.cpp" />
     <ClCompile Include="QueryOrder.cpp" />
@@ -155,7 +154,6 @@
     <ClInclude Include="ClientManager.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="OrderManager.h" />
-    <ClInclude Include="Product.h" />
     <ClInclude Include="ProductManager.h" />
     <ClInclude Include="QueryClient.h" />
     <ClInclude Include="QueryOrder.h" />

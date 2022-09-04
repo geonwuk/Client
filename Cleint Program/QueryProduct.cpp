@@ -2,6 +2,7 @@
 #include <iostream>
 #include<ctime>
 using namespace std;
+
 void QueryProduct::QueryAddProduct()
 {
 	string ID;
@@ -32,7 +33,7 @@ void QueryProduct::QueryEraseProduct()
 
 void QueryProduct::QueryShowProduct()
 {
-	auto m = pm.getCleints();
+	auto m = pm.getProducts();
 	for (auto& i : m) {
 		cout << i.second << endl;
 	}

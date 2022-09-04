@@ -4,14 +4,16 @@
 #include "QueryProduct.h"
 #include "QueryOrder.h"
 using namespace std;
+using namespace OM;
+using namespace PM;
 
 int main() {
 	ClientManager cm;
 	ProductManager pm;
 	OrderManager om{ cm,pm };
 
-	QueryClient qc{ cm };
-	QueryProduct qp{ pm };
+	QueryClient qc{ cm };//템플릿? Query<Client>,Query<Product>? 컨셉을 이용해 Query를
+	QueryProduct qp{ pm };//상속? Query를 상속받아 
 	QueryOrder qo{ om };
 
 	Display a1{ "고객관리프로그램"};
@@ -20,8 +22,10 @@ int main() {
 	Display b3{ "오더관리" };
 	a1.addChild({ &b1, &b2, &b3 });
 
-	Display c1{ "고객추가",  query(qc, &QueryClient::QueryAddClient) };
-	Display c2{ "고객삭제", query(qc, &QueryClient::QueryEraseClient) };
+	//Querychild vs treechild?
+	
+	Display c1{ "고객추가",  query(qc, &QueryClient::QueryAddClient) };//a1["고객정보관리"].addchild{"고객추가", query(...)}으로 바꾼다
+	Display c2{ "고객삭제", query(qc, &QueryClient::QueryEraseClient) };//qc.query?
 	Display c3{ "고객조회",query(qc, &QueryClient::QueryShowClient) };
 	b1.addChild({ &c1,&c2,&c3 });
 
@@ -30,9 +34,11 @@ int main() {
 	Display d3{ "상품조회", query(qp, &QueryProduct::QueryShowProduct) };
 	b2.addChild({ &d1,&d2,&d3 });
 
-	Display e1 {"오더 추가", query(qo, &QueryOrder::)}
+	Display e1{ "오더 추가", query(qo, &QueryOrder::QueryAddOrder) };
+	Display e2{ "오더 조회", query(qo, &QueryOrder::QueryShowOrder) };
+	b3.addChild({ &e1,&e2 });
 
-	b3.addChild
+	//b3.addChild
 
 	int go = 1;
 	do {
