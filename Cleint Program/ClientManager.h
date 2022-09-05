@@ -17,7 +17,6 @@ public:
 	const Client& findClient(const unsigned int id) const;
 
 	const map< unsigned int, Client >& getCleints() const;
-
 private:
 	static unsigned int client_id;
 	map< unsigned int, Client > clients;

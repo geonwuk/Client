@@ -1,9 +1,10 @@
 #pragma once
 #include "ClientManager.h"
+#include <array>
 class QueryClient
 {
 public:
-	QueryClient(ClientManager& cm) : cm{ cm } {}
+	QueryClient(ClientManager& cm);
 
 	void QueryAddClient();
 	void QueryEraseClient();
@@ -11,11 +12,9 @@ public:
 
 private:
 	ClientManager& cm;
-	static const unsigned int padding;
-	static unsigned int id_f;
-	static unsigned int name_f; //= string("name").size();
-	static unsigned int phone_f;
-	static unsigned int address_f;
-
+	static std::array<unsigned int, 4> fields;
+	using FIELD = decltype(fields);
+	using CONTENT = std::array<std::string, 4>;
+	void print(CONTENT content, char start, char pad);
 };
 

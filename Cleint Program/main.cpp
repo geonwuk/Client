@@ -16,7 +16,7 @@ int main() {
 	OrderManager om{ cm,pm };
 
 	QueryClient qc{ cm };//템플릿? Query<Client>,Query<Product>? 컨셉을 이용해 Query를
-	QueryProduct qp{ pm };//상속? Query를 상속받아 
+	QueryProduct qp{ pm };//상속? Query를 상속받으면 query함수에서 첫번째 인자를 없앨 수 있다
 	QueryOrder qo{ om };
 
 	Display a1{ "고객관리프로그램"};
