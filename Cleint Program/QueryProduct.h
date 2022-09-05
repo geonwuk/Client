@@ -5,7 +5,6 @@
 using namespace PM;
 
 std::ostream& operator<< (std::ostream& os, const tm& p);
-std::ostream& operator<< (std::ostream& os, const Product& p);
 class QueryProduct
 {
 public:
@@ -14,6 +13,8 @@ public:
 	void QueryAddProduct();
 	void QueryEraseProduct();
 	void QueryShowProduct();
+	void QuerySaveProduct();
+	void QueryLoadProduct();
 
 private:
 	ProductManager& pm;

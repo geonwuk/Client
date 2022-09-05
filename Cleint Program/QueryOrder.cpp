@@ -4,7 +4,7 @@
 using namespace PM;
 using namespace OM;
 using namespace std;
-inline std::ostream& operator<< (std::ostream& os, const Product& p);
+
 inline std::ostream& operator<< (std::ostream& os, const tm& p);
 std::ostream& operator<< (std::ostream& os, const OrderManager::Order& o) {
 	cout << "Cleint id: " << o.client_id << " ";

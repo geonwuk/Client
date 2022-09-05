@@ -7,6 +7,14 @@ using std::cin;
 using std::string;
 using std::endl;
 std::ostream& operator<< (std::ostream& os, const Client& c);
+
+const unsigned int QueryClient::padding = 1;
+unsigned int QueryClient::id_f = 0;
+unsigned int QueryClient::name_f = 0;
+unsigned int QueryClient::phone_f = 0;
+unsigned int QueryClient::address_f = 0;
+
+
 void QueryClient::QueryAddClient()
 {
 	string name;
@@ -31,11 +39,11 @@ void QueryClient::QueryEraseClient()
 
 void QueryClient::QueryShowClient()
 {
-	auto m = cm.getCleints();
-	for (auto& i : m) {
-		cout << i.second << endl;;
-	}
-	cout << endl;
+	//auto m = cm.getCleints();
+	//for (auto& i : m) {
+	//	cout << i.second << endl;;
+	//}
+	//cout << endl;
 }
 //Client(unsigned int id, string ID, string name, string phone_number = "NONE", string address = "NONE", Status status = Status::active) :
 std::ostream& operator<< (std::ostream& os, const Client& c) {

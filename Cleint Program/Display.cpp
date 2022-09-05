@@ -32,14 +32,15 @@ std::pair<int, bool> Display::show(const Display& parent) const
 	int selection;
 start:
 	system("cls");
+	cout << text << endl;
 	if (childs.empty()) {
 		in.getInput();
 		cout << endl;
+		cout << parent.text << endl;
 		showMenu(parent);
 		cin >> selection;
 		return { selection,true };
 	}
-	cout << text << endl;
 	showMenu(*this);
 	cin >> selection;
 middle:

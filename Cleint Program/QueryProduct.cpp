@@ -1,6 +1,7 @@
 #include "QueryProduct.h"
 #include <iostream>
 #include<ctime>
+#include  <fstream>
 using namespace std;
 
 void QueryProduct::QueryAddProduct()
@@ -37,16 +38,19 @@ void QueryProduct::QueryShowProduct()
 	cout << endl;
 }
 
+void QueryProduct::QuerySaveProduct(){
+	std::ofstream out("Product.txt");
+	pm.saveProducts(out);
+}
+
+void QueryProduct::QueryLoadProduct()
+{
+	std::ifstream in{ "Product.txt" };
+	pm.loadProducts(in);
+}
+
 std::ostream& operator<< (std::ostream& os, const tm& p) {
 	cout << p.tm_year + 1900 << "³â " << p.tm_mon + 1 << "¿ù " << p.tm_mday << "ÀÏ";
 	return os;
 }
 
-std::ostream& operator<< (std::ostream& os, const Product& p) {
-	cout << "id: " << p.getId() << " ";
-	cout << "Name: " << p.name << " ";
-	cout << "Price: " << p.price << " ";
-	cout << "quantity: " << p.qty << " ";
-	cout << "registered_date: " << p.registered_date << " ";
-	return os;
-}

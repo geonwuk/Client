@@ -35,15 +35,17 @@ int main() {
 	Display d1{ "상품추가", query(qp, &QueryProduct::QueryAddProduct) };
 	Display d2{ "상품제거", query(qp, &QueryProduct::QueryEraseProduct) };
 	Display d3{ "상품조회", query(qp, &QueryProduct::QueryShowProduct) };
-	b2.addChild({ &d1,&d2,&d3 });
+	Display d4{ "상품저장", query(qp, &QueryProduct::QuerySaveProduct) };
+	Display d5{ "상품로드", query(qp, &QueryProduct::QueryLoadProduct) };
+	b2.addChild({ &d1,&d2,&d3,&d4,&d5 });
 
 	Display e1{ "오더 추가", query(qo, &QueryOrder::QueryAddOrder) };
 	Display e2{ "오더 조회", query(qo, &QueryOrder::QueryShowOrder) };
 	b3.addChild({ &e1,&e2 });
 
 	cm.addClient(to_string(0));
-	pm.addProduct(to_string(0), 0, 0);
-	pm.addProduct(to_string(1), 1, 1);
+	//pm.addProduct(to_string(0), 0, 0);
+	//pm.addProduct(to_string(1), 1, 1);
 
 
 	int go = 1;
