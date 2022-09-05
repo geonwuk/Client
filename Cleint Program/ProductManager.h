@@ -8,25 +8,21 @@ using std::string;
 namespace PM {
 	using std::string;
 
-
 	class Product
 	{
 	protected:
 		Product() = default;
 	public:
-		Product(unsigned int id, string ID, string name, double price, double discounted_ratio, tm date) :
-			id{ id }, ID{ ID }, name{ name }, price{ price }, discounted_ratio{ discounted_ratio }, registered_date{ date }{}
+		Product(unsigned int id, string name, double price, unsigned int qty, tm date) :
+			id{ id }, name{ name }, price{ price }, qty{ qty }, registered_date{ date }{}
 
 		const unsigned int getId() const { return id; }
 
 		unsigned int id;
-		string ID;
 		string name;
 		double price;
-		double discounted_ratio;
+		unsigned int qty;
 		tm registered_date;
-
-
 
 	};
 
@@ -39,13 +35,12 @@ namespace PM {
 	class ProductManager
 	{
 	private:
-		map < string, Product* > products_by_string;
 
 	public:
 
-		void addProduct(string ID, string name, double price, double discounted_ratio);
-		bool eraseProduct(string ID);
-		const Product& findProduct(const string& ID) const;
+		bool addProduct(const string name, double price, unsigned int qty);
+		bool eraseProduct(const unsigned int id);
+		const Product& findProduct(const unsigned int id) const;
 
 		const map< unsigned int, Product >& getProducts() const;
 
@@ -53,7 +48,7 @@ namespace PM {
 
 
 	private:
-		unsigned int product_id=0;
+		static unsigned int product_id;
 		map < unsigned int, Product > products;
 
 	};

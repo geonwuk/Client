@@ -15,37 +15,36 @@ using std::vector;
 
 namespace OM {
 	struct OrderIterator;
-	class OrderManager
-	{
+	class OrderManager{
 	public:
 		OrderManager(ClientManager& cm, ProductManager& pm) :cm{ cm }, pm{ pm }{}
-
-	public:
 		using product_sptr = std::shared_ptr<Product>;
 		struct Order {
-			string client_ID;
+			unsigned int client_id;
 			vector<product_sptr> products;
-			std::tm date{};
+			std::tm date;
 		};
+
 	private:
 		const ProductManager& pm;
 		const ClientManager& cm;
 
 		unsigned int order_id = 0;
-		std::map<unsigned int, Order> orders;
-		std::multimap<string, Order*> orders_by_client_id;
-		map<string, std::weak_ptr<Product>> purchased_products;
+		std::multimap<unsigned int, Order> orders;
+		map<unsigned int, std::weak_ptr<Product>> purchased_products;
 		
 	public:
-		bool addOrder(string client_ID, const string& product_ID);
-		OM::OrderIterator getOrders(const string& client_ID);
+		bool addOrder(const unsigned int client_id, vector<unsigned int>);
+		OrderIterator getOrders(const unsigned int client_id) const;
 	};
 
+	using itr_type = decltype(OrderManager::orders)::const_iterator;
+
 	struct itr {
-		itr() {}
-		std::multimap<string, OrderManager::Order*>::const_iterator ptr;
-		itr(std::multimap<string, OrderManager::Order*>::const_iterator p) :ptr{ p } {}
-		const OrderManager::Order* operator*() const {
+		itr() {} //todo
+		itr_type ptr;
+		itr(itr_type p) :ptr{ p } {}
+		const OrderManager::Order& operator*() const {
 			return ptr->second;
 		}
 		void operator++() {
@@ -58,10 +57,8 @@ namespace OM {
 	};
 	struct OrderIterator {
 	public:
-		//decltype(orders_by_client_id)::iterator;
 		OrderIterator() {}
-		OrderIterator(std::multimap<string, OrderManager::Order*>::const_iterator b, std::multimap<string, OrderManager::Order*>::const_iterator e) : st{ b }, ed{ e } {}
-	
+		OrderIterator(itr_type b, itr_type e) : st{ b }, ed{ e } {}
 
 		itr st, ed;
 
@@ -74,5 +71,3 @@ namespace OM {
 	};
 
 }
-
-using itr_type = std::multimap<string, OM::OrderManager::Order*>::const_iterator;

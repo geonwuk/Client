@@ -45,7 +45,7 @@ start:
 middle:
 	if (selection <= 0)
 		return { -1,false };
-	if (selection > childs.size()) {
+	if (selection > static_cast<int>(childs.size())) {
 		system("cls");
 		cout << selection << "은 선택 불가" << endl<<endl;
 		showMenu(*this);

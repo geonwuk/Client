@@ -12,18 +12,15 @@ using std::string;
 class ClientManager
 {
 public:
-	//(unsigned int id, string ID, string name, string phone_number = "NONE", string address = "NONE", Status status = Status::active)
-	void addClient(string ID, string name, string phone_number = "NONE", string address = "NONE");
-	bool eraseClient(string ID);
-	const Client& findClient(const string ID) const;
-	void test() {}
+	bool addClient(const string name, const string phone_number = "NONE", const string address = "NONE");
+	bool eraseClient(const unsigned int id);
+	const Client& findClient(const unsigned int id) const;
 
 	const map< unsigned int, Client >& getCleints() const;
 
 private:
 	static unsigned int client_id;
 	map< unsigned int, Client > clients;
-	map < string, Client* > clients_by_string;
 
 	//static class search_field {
 	//	using Name = pair<string, string (Client::*)() const>;

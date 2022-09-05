@@ -3,6 +3,9 @@
 #include "QueryClient.h"
 #include "QueryProduct.h"
 #include "QueryOrder.h"
+#include "ClientManager.h"
+#include "ProductManager.h"
+
 using namespace std;
 using namespace OM;
 using namespace PM;
@@ -38,7 +41,10 @@ int main() {
 	Display e2{ "오더 조회", query(qo, &QueryOrder::QueryShowOrder) };
 	b3.addChild({ &e1,&e2 });
 
-	//b3.addChild
+	cm.addClient(to_string(0));
+	pm.addProduct(to_string(0), 0, 0);
+	pm.addProduct(to_string(1), 1, 1);
+
 
 	int go = 1;
 	do {

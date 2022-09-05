@@ -2,40 +2,38 @@
 using namespace std;
 using namespace OM;
 using namespace PM;
-bool OrderManager::addOrder(string client_ID, const string& product_ID)
+bool OrderManager::addOrder(const unsigned int client_id, vector<unsigned int> product_ids)
 {
 	Order order;
-	order.client_ID = client_ID;
+	order.client_id = client_id;
 
 	time_t base_time = time(nullptr);
 	tm local_time;
 	localtime_s(&local_time, &base_time);
 	order.date = local_time;
 
-	const Product& found = pm.findProduct(product_ID);
-	if (found == no_product)
-		return false;
+	for (auto product_id : product_ids) {
+		const Product& found = pm.findProduct(product_id);
+		if (found == no_product)
+			return false;
 
-	auto itr = purchased_products.find(product_ID);
-	if (itr == purchased_products.end()) {
-		order.products.emplace_back(new Product{ found });
-		purchased_products.emplace(product_ID, order.products.back());
-	}
-	else {
-		order.products.emplace_back((*itr).second.lock());
+		auto itr = purchased_products.find(product_id);
+		if (itr == purchased_products.end() || itr->second.expired()) { //2번째 컨디션은 상품은 그대로 있는데 관련 오더가 지워지고 혹시 erase가 잘못 코딩 되어 있을 떄를 대비
+			order.products.emplace_back(new Product{ found });
+			purchased_products.emplace(product_id, order.products.back());
+		}
+		else {
+			(orders.find(client_id)->second).products.emplace_back(itr->second.lock());
+		}
 	}
 
-	auto created_order = orders.emplace(order_id++, std::move(order));
-	orders_by_client_id.emplace(client_ID, &(created_order.first)->second);
+	orders.emplace(order_id++, std::move(order));
+
 	return true;
 }
-//OrderIterator getOrders(const string& client_ID) const;
 
-OM::OrderIterator OM::OrderManager::getOrders(const string& client_ID)
+OrderIterator OrderManager::getOrders(const unsigned int client_id) const
 {
-	auto tmp2 = this->orders_by_client_id.equal_range(client_ID);
-
-	using itr_type = std::multimap<string, OM::OrderManager::Order*>::const_iterator;
-
-	return OM::OrderIterator(tmp2.first, tmp2.second);
+	auto tmp2 = orders.equal_range(client_id);
+	return OrderIterator(tmp2.first, tmp2.second);
 }
