@@ -1,6 +1,7 @@
 #include "QueryOrder.h"
 #include <iostream>
-
+#include <stdexcept>
+#include <utility>
 using namespace PM;
 using namespace OM;
 using namespace std;
@@ -8,6 +9,25 @@ using namespace std;
 //inline std::ostream& operator<< (std::ostream& os, const tm& p);
 
 TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
+
+static int getSelection() {
+again:
+	int selection;
+	try {
+		cin >> selection;
+	}
+	catch (const std::ios_base::failure&) {
+		cin.clear();
+		cin.ignore(INT_MAX, '\n');
+		cout << "입력 오류입니다. 다시 입력하십시오. 숫자만 입력할 수 있습니다." << endl;
+		goto again;
+	}
+	if (selection < 0) {
+		cout << "입력 오류입니다. 다시 입력하십시오. 양수만 입력할 수 있습니다." << endl;
+	}
+	return selection;
+}
+
 
 void QueryOrder::QueryAddOrder() {
 	unsigned int client_ID;
@@ -21,7 +41,7 @@ void QueryOrder::QueryAddOrder() {
 	client_table.print_tail();
 	cout << "구매자 아이디 입력" << endl;
 	cout << "Cleint ID: ";
-	cin >> client_ID;
+	client_ID = getSelection();
 
 	TB::Table product_table{ "product id" };
 	product_table.print_header();
@@ -31,7 +51,7 @@ void QueryOrder::QueryAddOrder() {
 	}
 	product_table.print_tail();
 	string product_IDs;
-	cout << "구매할 Product IDs (use commas): ";
+	cout << "구매할 Product IDs (use commas):  예) 1,2,3";
 	cin >> product_IDs;
 
 	vector<unsigned int> products_vector;
@@ -41,18 +61,27 @@ void QueryOrder::QueryAddOrder() {
 		if (endIdx == string::npos) {
 			endIdx = product_IDs.length();
 		}
-		products_vector.emplace_back(stoul(product_IDs.substr(begIdx, endIdx - begIdx)));
+		try {
+			unsigned int pid = stoul(product_IDs.substr(begIdx, endIdx - begIdx));
+		}
+		catch (std::invalid_argument) {
+			cout << "오류 제품 아이디를 숫자로 변경할 수 없습니다." << endl;
+			return;
+		}
+		products_vector.emplace_back();
 		begIdx = product_IDs.find_first_not_of(',', endIdx);
+	
 	}
-	int order_id = om.addOrder(client_ID, products_vector);
-	if (order_id == -1) {
-		//에러
+	int order_id; bool success;
+	std::tie(order_id,success)= om.addOrder(client_ID, products_vector);
+	if (!success) {
+		cout << "오류: 추가할려는 제품 아이디 "<<order_id<< "가 없습니다." << endl;
+		return ;
 	}
 	//TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price", "quantity" };
 
 	for (auto pid : products_vector) {
 		const Product& product = om.pm.findProduct(pid);
-
 		table.setFields({ to_string(order_id),to_string(client_ID), to_string(product.getId()),product.getName(), to_string(product.getPrice()) });
 	}
 }
@@ -74,8 +103,8 @@ void QueryOrder::QueryShowOrder()
 	auto orders = om.getOrders();
 	for (auto& order : orders) {
 		const OrderManager::Order& o = order;
-		for (auto& product_id : order.products) {
-			const Product& p = om.getPurchasedProducts(product_id);
+		for (auto product : order.products) {
+			const Product& p = *product;
 			table.print({ to_string(o.order_id),to_string(o.client_id), to_string(p.getId()), p.getName(), to_string(p.getPrice()) });
 		}
 	}
@@ -102,11 +131,24 @@ void QueryOrder::QueryShowOrder()
 
 
 void QueryOrder::QuerySaveOrder(){
-
+	std::ofstream out("Orders.txt");
+	om.saveOrders(out);
 }
 
 void QueryOrder::QueryLoadOrder()
 {
+	std::ifstream in{ "Orders.txt" };
+	auto pr = om.loadOrders(in);
+
+	//for (auto& i : pr.second) {
+	//	om.addOrder(i.getName(), i.getPrice(), i.getQty(), i.getDate());
+	//	unsigned int new_id = pm.getMaxIndex();
+	//	std::stringstream ss;
+	//	auto time_string = i.getDate();
+	//	ss << std::put_time(&time_string, "%A %c");
+	//	string time = ss.str();
+	//	table.setFields({ to_string(new_id),i.getName(), to_string(i.getPrice()), to_string(i.getQty()), time });
+	//}
 }
 void QueryOrder::QueryEraseOrder()
 {

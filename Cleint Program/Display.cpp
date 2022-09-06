@@ -7,6 +7,7 @@ using std::endl;
 using std::cin;
 emptyQuery Display::empty{};
 Display Display::nil{};
+
 void Display::showMenu(const Display& disp) const {
 	int i = 1;
 	for (auto e : disp.childs) {
@@ -27,6 +28,21 @@ int Display::run() const
 	return -1;
 }
 
+static int getSelection() {
+again:
+	int selection;
+	try {
+		cin >> selection;
+	}
+	catch (const std::ios_base::failure&) {
+		cin.clear();
+		cin.ignore(INT_MAX, '\n');
+		cout << "입력 오류입니다. 다시 입력하십시오. 숫자만 입력할 수 있습니다." << endl;
+		goto again;
+	}
+	return selection;
+}
+
 std::pair<int, bool> Display::show(const Display& parent) const
 {
 	int selection;
@@ -38,11 +54,11 @@ start:
 		cout << endl;
 		cout << parent.text << endl;
 		showMenu(parent);
-		cin >> selection;
+		selection = getSelection();
 		return { selection,true };
 	}
 	showMenu(*this);
-	cin >> selection;
+	selection = getSelection();
 middle:
 	if (selection <= 0)
 		return { -1,false };
@@ -50,7 +66,7 @@ middle:
 		system("cls");
 		cout << selection << "은 선택 불가" << endl<<endl;
 		showMenu(*this);
-		cin >> selection;
+		selection = getSelection();
 		goto middle;
 	}
 	//test

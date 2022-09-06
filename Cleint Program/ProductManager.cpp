@@ -26,14 +26,14 @@ ostream& operator<< (ostream& ss, tm p) {
 	return ss;
 }
 
-std::ostream& PM::operator<< (std::ostream& os, const Product& p) {
-	os << "id: " << p.getId() << " ";
-	os << "Name: " << p.name << " ";
-	os << "Price: " << p.price << " ";
-	os << "quantity: " << p.qty << " ";
-	os << "registered_date: " << p.registered_date << " ";
-	return os;
-}//order¿¡¼­ ¾¸
+//std::ostream& PM::operator<< (std::ostream& os, const Product& p) {
+//	os << "id: " << p.getId() << " ";
+//	os << "Name: " << p.name << " ";
+//	os << "Price: " << p.price << " ";
+//	os << "quantity: " << p.qty << " ";
+//	os << "registered_date: " << p.registered_date << " ";
+//	return os;
+//}//order¿¡¼­ ¾¸
 
 bool PM::operator== (const Product& p, const NoProduct&) {
 	const Product& np{ no_product };
@@ -43,7 +43,7 @@ bool PM::operator== (const Product& p, const NoProduct&) {
 		return false;
 }
 
-bool ProductManager::addProduct(const string name, double price, unsigned int qty, std::tm local_time)
+bool ProductManager::addProduct(const string name, unsigned int price, unsigned int qty, std::tm local_time)
 {
 	bool success;
 	tie(ignore, success) = products.emplace(product_id, Product{ product_id, name, price, qty, local_time });
@@ -112,7 +112,7 @@ std::pair<std::ifstream&, std::vector<Product>> PM::ProductManager::loadProducts
 
 		string time_string = tmp[4];
 		unsigned int qty = stoul(tmp[3]);
-		double price = stod(tmp[2]);
+		unsigned int price = stoul(tmp[2]);
 		string name = tmp[1];
 		unsigned int id = stoul(tmp[0]);
 

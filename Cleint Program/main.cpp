@@ -10,6 +10,7 @@ using namespace std;
 using namespace OM;
 using namespace PM;
 
+
 int main() {
 	ClientManager cm;
 	ProductManager pm;
@@ -49,12 +50,19 @@ int main() {
 	//pm.addProduct(to_string(0), 0, 0);
 	//pm.addProduct(to_string(1), 1, 1);
 
+	cin.exceptions(ios::failbit | ios::badbit);
+
 
 	int go = 1;
 	do {
-		go = a1.run();
+		try {
+			go = a1.run();
+		}
+		catch (const std::ios_base::failure& ) {
+			cout << "입력 오류입니다. 다시 입력하십시오. 숫자만 입력할 수 있습니다." << endl;
+			continue;
+		}
 	} while (go>=0);
 
-
-	cout << "end" << endl;
+	cout << "종료" << endl;
 }

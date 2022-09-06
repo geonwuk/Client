@@ -23,14 +23,8 @@ public:
 	}
 
 };
-//mem_fn
 template<typename C, typename T>
 print<C,T> query(C c_,T t_) { return print<C,T>(c_, t_); }
-
-//template<typename C, typename T>
-//print2<C, T> query3(C::T* t_) { 
-//	auto i = std::mem_fn(t_);
-//return print2<C, T>(c_, t_); }
 
 class emptyQuery : public Query {
 	void getInput() {

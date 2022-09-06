@@ -6,22 +6,42 @@
 #include <sstream>
 
 using namespace std;
+
 TB::Table QueryProduct::table{ "id","name","price","quantity","date"};
+
+static int getSelection() {
+again:
+	int selection;
+	try {
+		cin >> selection;
+	}
+	catch (const std::ios_base::failure&) {
+		cin.clear();
+		cin.ignore(INT_MAX, '\n');
+		cout << "입력 오류입니다. 다시 입력하십시오. 숫자만 입력할 수 있습니다." << endl;
+		goto again;
+	}
+	if (selection < 0) {
+		cout << "입력 오류입니다. 다시 입력하십시오. 양수만 입력할 수 있습니다." << endl;
+	}
+	return selection;
+}
+
 void QueryProduct::QueryAddProduct()
 {
 	time_t base_time = time(nullptr);
 	tm local_time;
 	localtime_s(&local_time, &base_time);
 	string name;
-	double price;
+	unsigned int price;
 	unsigned int qty;
 	cout << "product name: ";
 	cin >> name;
 	cout << "price: ";
-	cin >> price;
+	price = getSelection();
 	cout << "QTY: ";
-	cin >> qty;
-
+	qty = getSelection();
+	
 	pm.addProduct(name, price, qty, local_time);
 	std::stringstream ss;
 	ss<< std::put_time(&local_time, "%A %c");
@@ -82,8 +102,4 @@ void QueryProduct::QueryLoadProduct()
 	}
 }
 
-std::ostream& operator<< (std::ostream& os, const tm& p) {
-	cout << p.tm_year + 1900 << "년 " << p.tm_mon + 1 << "월 " << p.tm_mday << "일";
-	return os;
-}
 
