@@ -1,6 +1,8 @@
 #pragma once
 #include "ClientManager.h"
 #include <array>
+#include "Table.h"
+
 class QueryClient
 {
 public:
@@ -12,9 +14,7 @@ public:
 
 private:
 	ClientManager& cm;
-	static std::array<unsigned int, 4> fields;
-	using FIELD = decltype(fields);
-	using CONTENT = std::array<std::string, 4>;
-	void print(CONTENT content, char start, char pad);
+
+	static TB::Table table;
 };
 

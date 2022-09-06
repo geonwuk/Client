@@ -2,39 +2,36 @@
 #include <array>
 #include <string>
 #include <initializer_list>
+#include <vector>
+#include <iostream>
+#include <iomanip>
+using std::cout;
+using std::endl;
+using std::vector;
+using std::string;
 namespace TB {
+	using list = std::initializer_list<std::string>;
 	class Field {
 	public:
-		Field(std::string name_) {
-			operator=(name_);
-		}
-		Field& operator= (std::string name_) {
-			auto sz = name_.size();
-			max_len = max_len > sz ? max_len : sz;
-			name = name_;
-			return *this;
-		}
-		std::string getName() {
-			return name;
-		}
+		Field(std::string name_);
+		void check_field(std::string name_);
+		string getName() const { return name; }
+		const unsigned int getLen() const {return max_len; }
 	private:
-		unsigned int max_len;
-		std::string name;
+		unsigned int max_len=0;
+		const std::string name;
 	};
-	template<unsigned int N>
-	class Table :public std::array<Field, N>{
+	class Table{
 	public:
-		Table(std::initializer_list<string> names) {
-			//template<unsigned int N>
-			//struct Table :public std::array<Field, N> {
-			//	template< typename X>
-			//	Table(X x) : std::array<Field, N>{x } {}
-			//};
-			/*std::array<Field, N>::std::array<Field, N>(names);*/
-		}
-
+		Table() {}
+		void setFields(list ls);
+		void print_header();
+		void print(const list& contents);
+		void print_tail();
+		Table(list field_names) : fields{ field_names.begin() ,field_names.end() } {}
 	private:
-		std::array<Field, N> fields;
-		void setField();
+		vector<Field> fields;
+		void print_impl(list contents, char start, char pad);
+		void print_impl();
 	};
 }

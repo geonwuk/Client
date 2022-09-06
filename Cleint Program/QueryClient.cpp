@@ -2,20 +2,14 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-#include "Table.h"
-using namespace std;
-std::ostream& operator<< (std::ostream& os, const Client& c);
+#include "Table.cpp"
 
-std::array<unsigned int, 4> QueryClient::fields{};
+using namespace std;
+//std::ostream& operator<< (std::ostream& os, const Client& c);
+TB::Table QueryClient::table{ "id","name","phone number","address" };
 
 QueryClient::QueryClient(ClientManager& cm) : cm{cm}
 {
-	fields[0] = string{ "id" }.size();
-	fields[1] = string{ "name" }.size();
-	fields[2] = string{ "phone number" }.size();
-	fields[3] = string{ "address" }.size();
-	TB::Table<3> s{ "1","2","3" };
-
 }
 
 void QueryClient::QueryAddClient()
@@ -25,57 +19,45 @@ void QueryClient::QueryAddClient()
 	string address;
 	cout << "name: ";
 	cin >> name;
-	fields[1] = name.size();
 	cout << "phone number: ";
 	cin >> phone_number;
-	fields[2] = phone_number.size();
 	cout << "address: ";
 	cin >> address;
-	fields[3] = address.size();
 	cm.addClient(name, phone_number, address);
 	auto c = cm.getCleints();
 	unsigned int id = (--c.end())->first;
-	fields[0] = string{ "id" }.size() > std::to_string(id).size() ? string{ "id" }.size(): std::to_string(id).size();
-	for (auto f : fields) {
-		cout << f << " ";
-	}
+	table.setFields({ to_string(id),name,phone_number,address });
 }
 
 void QueryClient::QueryEraseClient()
 {
+	QueryShowClient();
 	unsigned int id;
-	cout << "id: ";
+	cout << "삭제할 클라이언트 id: ";
 	cin >> id;
 	bool success = cm.eraseClient(id);
-}
-void QueryClient::print(CONTENT content, char start, char pad) {
-	unsigned int idx = 0;
-	for (auto f : fields) {
-		cout << start;
-		cout<<pad<<setw(f)<<setfill(pad)<<content[idx++]<<pad;
+	if (success) {
+		cout <<"ID:" << id << " 클라이언트 삭제 완료" << endl;
 	}
-	cout << start<<endl;
-	
+	else {
+		cout <<"ID:"<< id << " 클라이언트는 존재하지 않습니다. 삭제 실패" << endl;
+	}
 }
 
 void QueryClient::QueryShowClient()
 {
-	print({ "","","","" }, '+', '-');
-	print({ "id","name","phone number","address" }, '|', ' ');
-	print({ "","","","" }, '+', '-');
+	table.print_header();
 	auto m = cm.getCleints();
 	for (auto& itr : m) {
 		const Client& c = itr.second;
-		print({ std::to_string(c.getId()), c.getName(),c.getPhoneNumber(),c.getAddress()},'|',' ');
+		table.print({ std::to_string(c.getId()), c.getName(),c.getPhoneNumber(),c.getAddress()});
 	}
-	print({ "","","","" }, '+', '-');
-	
+	table.print_tail();
 }
-//Client(unsigned int id, string ID, string name, string phone_number = "NONE", string address = "NONE", Status status = Status::active) :
-std::ostream& operator<< (std::ostream& os, const Client& c) {
-	cout << "id: " << c.getId() << " ";
-	cout << "Name: " << c.getName()<<" ";
-	cout << "Phone: " << c.getPhoneNumber()<<" ";
-	cout << "Address: " << c.getAddress()<<" ";
-	return os;
-}
+//std::ostream& operator<< (std::ostream& os, const Client& c) {
+//	cout << "id: " << c.getId() << " ";
+//	cout << "Name: " << c.getName()<<" ";
+//	cout << "Phone: " << c.getPhoneNumber()<<" ";
+//	cout << "Address: " << c.getAddress()<<" ";
+//	return os;
+//}
