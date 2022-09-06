@@ -1,10 +1,8 @@
 #include "ProductManager.h"
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <vector>
 #include <string>
-#include <locale>
 #include <iomanip>
 using namespace std;
 using namespace PM;
@@ -35,7 +33,7 @@ std::ostream& PM::operator<< (std::ostream& os, const Product& p) {
 	os << "quantity: " << p.qty << " ";
 	os << "registered_date: " << p.registered_date << " ";
 	return os;
-}
+}//order¿¡¼­ ¾¸
 
 bool PM::operator== (const Product& p, const NoProduct&) {
 	const Product& np{ no_product };
@@ -45,11 +43,8 @@ bool PM::operator== (const Product& p, const NoProduct&) {
 		return false;
 }
 
-bool ProductManager::addProduct(const string name, double price, unsigned int qty)
+bool ProductManager::addProduct(const string name, double price, unsigned int qty, std::tm local_time)
 {
-	time_t base_time = time(nullptr);
-	tm local_time;
-	localtime_s(&local_time, &base_time);
 	bool success;
 	tie(ignore, success) = products.emplace(product_id, Product{ product_id, name, price, qty, local_time });
 	product_id++;
@@ -81,6 +76,17 @@ const map<unsigned int, Product>& ProductManager::getProducts() const
 	return products;
 }
 
+const Product& PM::ProductManager::getProduct(const unsigned int id) const
+{
+	auto p = products.find(id);
+	if (p == products.end()) {
+		return no_product;
+	}
+	else {
+		return p->second;
+	}
+}
+
 ofstream& PM::ProductManager::saveProducts(ofstream& out) const
 {
 	for (const auto& p : products) {
@@ -89,7 +95,7 @@ ofstream& PM::ProductManager::saveProducts(ofstream& out) const
 	return out;
 }
 
-ifstream& PM::ProductManager::loadProducts(ifstream& in){
+std::pair<std::ifstream&, std::vector<Product>> PM::ProductManager::loadProducts(ifstream& in){
 	vector<Product> product_vector;
 	std::string str;
 	while (getline(in, str)){
@@ -104,28 +110,23 @@ ifstream& PM::ProductManager::loadProducts(ifstream& in){
 			begIdx = str.find_first_not_of(',', endIdx);
 		}
 
-
-		string time_string = tmp.back();
-		tmp.pop_back();
-		unsigned int qty = stoul(tmp.back());
-		tmp.pop_back();
-		double price = stod(tmp.back());
-		tmp.pop_back();
-		string name = tmp.back();
-		tmp.pop_back();
-		unsigned int id = stoul(tmp.back());
+		string time_string = tmp[4];
+		unsigned int qty = stoul(tmp[3]);
+		double price = stod(tmp[2]);
+		string name = tmp[1];
+		unsigned int id = stoul(tmp[0]);
 
 		tm time;
 		istringstream ss{ time_string };
 		ss>>std::get_time(&time, "%a %m/%d/%y %H:%M:%S");
 		product_vector.emplace_back(id, name, price, qty, time);
 	}
-	for (auto& i : product_vector) {
-		products.emplace(i.id,move(i));
-	}
+	return  { in, move(product_vector) };
+}
 
-	return in;
-
+const unsigned int PM::ProductManager::getMaxIndex() const
+{
+	return (--products.end())->first;
 }
 
 //

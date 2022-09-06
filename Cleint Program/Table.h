@@ -31,6 +31,7 @@ namespace TB {
 		Table(list field_names) : fields{ field_names.begin() ,field_names.end() } {}
 	private:
 		vector<Field> fields;
+		void print_impl(char start, char pad);
 		void print_impl(list contents, char start, char pad);
 		void print_impl();
 	};

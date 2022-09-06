@@ -1,6 +1,7 @@
 #pragma once
 #include "ProductManager.h"
 #include <iosfwd>
+#include "Table.h"
 
 using namespace PM;
 
@@ -18,5 +19,7 @@ public:
 
 private:
 	ProductManager& pm;
+	static TB::Table table;
+
 };
 

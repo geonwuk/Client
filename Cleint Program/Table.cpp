@@ -19,9 +19,9 @@ void TB::Table::setFields(list ls){
 }
 
 void TB::Table::print_header() {
-	print_impl({ "","","","" }, '+', '-');
+	print_impl('+', '-');
 	print_impl();
-	print_impl({ "","","","" }, '+', '-');
+	print_impl('+', '-');
 }
 
 void TB::Table::print(const list& contents) {
@@ -29,14 +29,21 @@ void TB::Table::print(const list& contents) {
 }
 
 void TB::Table::print_tail() {
-	print_impl({ "","","","" }, '+', '-');
+	print_impl('+', '-');
 }
 
 void TB::Table::print_impl(list contents, char start, char pad) {
 	auto content = contents.begin();
 	unsigned int idx = 0;
 	for (auto f : fields) {
-		cout << start << pad << std::setw(f.getLen()) << std::setfill(pad) << content[idx++] << pad;
+		cout << start << pad << std::setw(f.getLen()) << std::setfill(pad) << std::left << content[idx++] << pad;
+	}
+	cout << start << endl;
+}
+
+void TB::Table::print_impl(char start, char pad) {
+	for (auto f : fields) {
+		cout << start << pad << std::setw(f.getLen()) << std::setfill(pad) << "" << pad;
 	}
 	cout << start << endl;
 }
@@ -45,7 +52,7 @@ void TB::Table::print_impl() {
 	char start = '|';
 	char pad = ' ';
 	for (auto f : fields) {
-		cout << start << pad << std::setw(f.getLen()) << std::setfill(pad) << f.getName() << pad;
+		cout << start << pad << std::setw(f.getLen()) << std::setfill(pad) << std::left << f.getName() << pad;
 	}
 	cout << start << endl;
 }

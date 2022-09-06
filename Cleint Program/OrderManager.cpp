@@ -1,11 +1,23 @@
 #include "OrderManager.h"
+
 using namespace std;
 using namespace OM;
 using namespace PM;
-bool OrderManager::addOrder(const unsigned int client_id, vector<unsigned int> product_ids)
+
+const Product& OM::OrderManager::getPurchasedProducts(const Product_ID pid) const
+{
+	auto it = purchased_products.find(pid);
+	if (it == purchased_products.end()) {
+		return no_product;
+	}
+	else {
+		return it->second;
+	}
+}
+
+int OrderManager::addOrder(const unsigned int client_id, vector<unsigned int> product_ids)
 {
 	Order order;
-	order.client_id = client_id;
 
 	time_t base_time = time(nullptr);
 	tm local_time;
@@ -15,21 +27,20 @@ bool OrderManager::addOrder(const unsigned int client_id, vector<unsigned int> p
 	for (auto product_id : product_ids) {
 		const Product& found = pm.findProduct(product_id);
 		if (found == no_product)
-			return false;
-
+			return -1;
 		auto itr = purchased_products.find(product_id);
-		if (itr == purchased_products.end() || itr->second.expired()) { //2번째 컨디션은 상품은 그대로 있는데 관련 오더가 지워지고 혹시 erase가 잘못 코딩 되어 있을 떄를 대비
-			order.products.emplace_back(new Product{ found });
-			purchased_products.emplace(product_id, order.products.back());
+		if (itr == purchased_products.end()){
+			purchased_products.emplace(product_id, Product{ found });
 		}
-		else {
-			(orders.find(client_id)->second).products.emplace_back(itr->second.lock());
-		}
+		order.products.emplace_back(found.getId());
 	}
+	order.order_id = order_id;
+	order.client_id = client_id;
+	auto inserted_order = orders.emplace(order_id, std::move(order));
+	orders_CID.emplace(client_id, &inserted_order.first->second);
 
-	orders.emplace(order_id++, std::move(order));
 
-	return true;
+	return order_id++;
 }
 
 OrderIterator OrderManager::getOrders(const unsigned int client_id) const
@@ -37,3 +48,21 @@ OrderIterator OrderManager::getOrders(const unsigned int client_id) const
 	auto tmp2 = orders.equal_range(client_id);
 	return OrderIterator(tmp2.first, tmp2.second);
 }
+
+OrderIterator OrderManager::getOrders() const
+{
+	return OrderIterator(orders.begin(), orders.end());
+}
+
+const OrderManager::Order& OrderManager::getOrder(const Order_ID order_id) const {
+	//todo: emptyOrder
+	try {
+		orders.at(order_id);
+	}
+	catch(std::out_of_range){
+		return OrderManager::Order{};
+	}
+	return OrderManager::Order{};
+}
+
+

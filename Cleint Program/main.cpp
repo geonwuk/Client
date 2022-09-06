@@ -30,7 +30,9 @@ int main() {
 	Display c1{ "고객추가",  query(qc, &QueryClient::QueryAddClient) };//a1["고객정보관리"].addchild{"고객추가", query(...)}으로 바꾼다
 	Display c2{ "고객삭제", query(qc, &QueryClient::QueryEraseClient) };//qc.query?
 	Display c3{ "고객조회",query(qc, &QueryClient::QueryShowClient) };
-	b1.addChild({ &c1,&c2,&c3 });
+	Display c4{ "고객저장", query(qc, &QueryClient::QuerySaveClient) };
+	Display c5{ "고객로드", query(qc, &QueryClient::QueryLoadClient) };
+	b1.addChild({ &c1,&c2,&c3,&c4,&c5 });
 
 	Display d1{ "상품추가", query(qp, &QueryProduct::QueryAddProduct) };
 	Display d2{ "상품제거", query(qp, &QueryProduct::QueryEraseProduct) };

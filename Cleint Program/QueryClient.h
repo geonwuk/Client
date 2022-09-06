@@ -11,6 +11,8 @@ public:
 	void QueryAddClient();
 	void QueryEraseClient();
 	void QueryShowClient();
+	void QueryLoadClient()const;
+	void QuerySaveClient();
 
 private:
 	ClientManager& cm;

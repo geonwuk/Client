@@ -148,6 +148,7 @@
     <ClCompile Include="QueryClient.cpp" />
     <ClCompile Include="QueryOrder.cpp" />
     <ClCompile Include="QueryProduct.cpp" />
+    <ClCompile Include="Table.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="QueryClient.h" />
     <ClInclude Include="QueryOrder.h" />
     <ClInclude Include="QueryProduct.h" />
+    <ClInclude Include="Table.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

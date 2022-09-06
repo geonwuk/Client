@@ -24,5 +24,4 @@ private:
 	Status status;
 };
 
-std::ostream& operator<< (std::ostream& os, const Client& c);
 

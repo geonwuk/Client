@@ -1,8 +1,8 @@
 #include "QueryClient.h"
 #include <iostream>
 #include <string>
+#include  <fstream>
 #include <iomanip>
-#include "Table.cpp"
 
 using namespace std;
 //std::ostream& operator<< (std::ostream& os, const Client& c);
@@ -14,6 +14,7 @@ QueryClient::QueryClient(ClientManager& cm) : cm{cm}
 
 void QueryClient::QueryAddClient()
 {
+	QueryShowClient();
 	string name;
 	string phone_number;
 	string address;
@@ -24,8 +25,8 @@ void QueryClient::QueryAddClient()
 	cout << "address: ";
 	cin >> address;
 	cm.addClient(name, phone_number, address);
-	auto c = cm.getCleints();
-	unsigned int id = (--c.end())->first;
+
+	unsigned int id = cm.getMaxIndex();
 	table.setFields({ to_string(id),name,phone_number,address });
 }
 
@@ -54,10 +55,20 @@ void QueryClient::QueryShowClient()
 	}
 	table.print_tail();
 }
-//std::ostream& operator<< (std::ostream& os, const Client& c) {
-//	cout << "id: " << c.getId() << " ";
-//	cout << "Name: " << c.getName()<<" ";
-//	cout << "Phone: " << c.getPhoneNumber()<<" ";
-//	cout << "Address: " << c.getAddress()<<" ";
-//	return os;
-//}
+
+
+void QueryClient::QuerySaveClient() {
+	std::ofstream out("Clients.txt");
+	cm.saveClients(out);
+}
+
+void QueryClient::QueryLoadClient()const
+{
+	std::ifstream in{ "Clients.txt" };
+	auto pr = cm.loadClients(in);
+	for (auto& i : pr.second) {
+		cm.addClient(i.getName(), i.getPhoneNumber(), i.getAddress());
+		unsigned int new_id = cm.getMaxIndex();
+		table.setFields({ to_string(new_id),i.getName(),i.getPhoneNumber(),i.getAddress() });
+	}
+}
