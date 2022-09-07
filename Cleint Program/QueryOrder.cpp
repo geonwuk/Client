@@ -33,25 +33,25 @@ void QueryOrder::QueryAddOrder() {
 	unsigned int client_ID;
 
 	TB::Table client_table{ "client id" };
-	client_table.print_header();
+	client_table.printHeader();
 	for (auto& itr : om.cm.getCleints()) {
 		const Client& c = itr.second;
 		client_table.print({ to_string(c.getId()) });
 	}
-	client_table.print_tail();
+	client_table.printTail();
 	cout << "구매자 아이디 입력" << endl;
 	cout << "Cleint ID: ";
 	client_ID = getSelection();
 
 	TB::Table product_table{ "product id" };
-	product_table.print_header();
+	product_table.printHeader();
 	for (auto& itr : om.pm.getProducts()) {
 		const Product& p = itr.second;
 		product_table.print({ to_string(p.getId()) });
 	}
-	product_table.print_tail();
+	product_table.printTail();
 	string product_IDs;
-	cout << "구매할 Product IDs (use commas):  예) 1,2,3";
+	cout << "구매할 Product IDs (use commas):  예) 1,2,3 "<<endl;
 	cin >> product_IDs;
 
 	vector<unsigned int> products_vector;
@@ -61,14 +61,15 @@ void QueryOrder::QueryAddOrder() {
 		if (endIdx == string::npos) {
 			endIdx = product_IDs.length();
 		}
+		unsigned int pid;
 		try {
-			unsigned int pid = stoul(product_IDs.substr(begIdx, endIdx - begIdx));
+			pid = stoul(product_IDs.substr(begIdx, endIdx - begIdx));
 		}
 		catch (std::invalid_argument) {
 			cout << "오류 제품 아이디를 숫자로 변경할 수 없습니다." << endl;
 			return;
 		}
-		products_vector.emplace_back();
+		products_vector.emplace_back(pid);
 		begIdx = product_IDs.find_first_not_of(',', endIdx);
 	
 	}
@@ -88,7 +89,7 @@ void QueryOrder::QueryAddOrder() {
 
 void QueryOrder::QueryShowOrder(){
 	//TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
-	table.print_header();
+	table.printHeader();
 	auto orders = om.getOrders();
 	for (auto& order : orders) {
 		const OrderManager::Order& o = order;
@@ -97,7 +98,7 @@ void QueryOrder::QueryShowOrder(){
 			table.print({ to_string(o.order_id),to_string(o.client_id), to_string(p.getId()), p.getName(), to_string(p.getPrice()) });
 		}
 	}
-	table.print_tail();
+	table.printTail();
 }
 
 
@@ -113,10 +114,25 @@ void QueryOrder::QueryLoadOrder()
 {
 	std::ifstream in{ "Orders.txt" };
 	std::vector<OrderManager::Order > loaded_orders;
+
 	std::tie(std::ignore, loaded_orders) = om.loadOrders(in);
 
 	for (auto& order : loaded_orders) {
-		om.addOrder(order.order_id, order.client_id, order.products, order.date);
+		try {
+			om.addOrder(order);
+		}
+		catch (No_Matching_Product e) {
+			cout << "오류: 상품ID " << e.pid << "가 상품 목록에 없습니다." << endl;
+			return;
+		}
+		catch (No_Matching_Client e) {
+			cout << "오류: 고객ID " << e.cid << "가 고객 목록에 없습니다." << endl;
+			return;
+		}
+		catch (Already_In_Order e) {
+			cout << "오류: 주문ID " << e.oid << "가 이미 존재합니다." << endl;
+			return;
+		}
 		for (auto product_id : order.products) {
 			const Product& p = om.pm.getProduct(product_id);
 			table.setFields({ to_string(order.order_id), to_string(order.client_id), to_string(product_id), p.getName(), to_string(p.getPrice()) });

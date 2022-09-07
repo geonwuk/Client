@@ -1,2 +1,3 @@
-0,0,NONE,NONE
-1,a,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,aaaaaaaaaaaaaaaaaaab
+0,a,a,a
+1,akk,010,ddd
+2,aaaaaaaaaaa,ccccccccccccc,dddddddddddddddddddd

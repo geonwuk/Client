@@ -16,8 +16,8 @@ std::ofstream& operator<< (std::ofstream& out, tm p) {
 
 std::ofstream& PM::operator<<(std::ofstream& out, const Product& p)
 {
-	out << p.id << ',' << p.name << ',' << p.price << ',' << p.qty<<',';
-	out << p.registered_date;
+	out << p.getId() << ',' << p.getName() << ',' << p.getPrice() << ',' << p.getQty()<<',';
+	out << p.getDate();
 	return out;
 }
 
@@ -34,7 +34,7 @@ bool PM::operator== (const Product& p, const NoProduct&) {
 		return false;
 }
 
-bool ProductManager::addProduct(const string name, unsigned int price, unsigned int qty, std::tm local_time)
+bool ProductManager::addProduct(const string name, const unsigned int price, const unsigned int qty, const std::tm local_time)
 {
 	bool success;
 	tie(ignore, success) = products.emplace(product_id, Product{ product_id, name, price, qty, local_time });

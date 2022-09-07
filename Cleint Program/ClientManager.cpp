@@ -54,7 +54,7 @@ ofstream& ClientManager::saveClients(ofstream& out) const
 	return out;
 }
 
-std::pair<std::ifstream&, std::vector<Client>> ClientManager::loadClients(std::ifstream& in) {
+std::pair<std::ifstream&, std::vector<Client>> ClientManager::loadClients(std::ifstream& in) const {
 	vector<Client> client_vector;
 	std::string str;
 	while (std::getline(in, str)) {

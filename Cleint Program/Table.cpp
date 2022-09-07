@@ -1,11 +1,14 @@
 #include "Table.h"
-
-TB::Field::Field(std::string name_) : name{ name_ } {
+#include <iomanip>
+#include <iostream>
+using namespace std;
+using namespace TB;
+Table::Field::Field(string name_) : name{ name_ } {
 	auto sz = name_.size();
 	max_len = max_len > sz ? max_len : sz;
 }
 
-void TB::Field::check_field(std::string name_){
+void Table::Field::check_field(std::string name_){
 	auto sz = name_.size();
 	max_len = max_len > sz ? max_len : sz;
 }
@@ -18,7 +21,7 @@ void TB::Table::setFields(list ls){
 	}
 }
 
-void TB::Table::print_header() {
+void TB::Table::printHeader() {
 	print_impl('+', '-');
 	print_impl();
 	print_impl('+', '-');
@@ -28,7 +31,7 @@ void TB::Table::print(const list& contents) {
 	print_impl(contents, '|', ' ');
 }
 
-void TB::Table::print_tail() {
+void TB::Table::printTail() {
 	print_impl('+', '-');
 }
 

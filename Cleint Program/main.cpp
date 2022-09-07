@@ -23,7 +23,7 @@ int main() {
 	Display a1{ "고객관리프로그램"};
 	Display b1{ "고객정보관리"};
 	Display b2{ "상품정보관리"};
-	Display b3{ "오더관리" };
+	Display b3{ "주문관리" };
 	a1.addChild({ &b1, &b2, &b3 });
 
 	//Querychild vs treechild?
@@ -42,11 +42,13 @@ int main() {
 	Display d5{ "상품로드", query(qp, &QueryProduct::QueryLoadProduct) };
 	b2.addChild({ &d1,&d2,&d3,&d4,&d5 });
 
-	Display e1{ "오더 추가", query(qo, &QueryOrder::QueryAddOrder) };
-	Display e2{ "오더 조회", query(qo, &QueryOrder::QueryShowOrder) };
-	b3.addChild({ &e1,&e2 });
+	Display e1{ "주문추가", query(qo, &QueryOrder::QueryAddOrder) };
+	Display e2{ "주문조회", query(qo, &QueryOrder::QueryShowOrder) };
+	Display e4( "주문저장", query(qo, &QueryOrder::QuerySaveOrder));
+	Display e5( "주문로드", query(qo, &QueryOrder::QueryLoadOrder));
+	b3.addChild({ &e1,&e2,&e4,&e5 });
 
-	cm.addClient(to_string(0));
+	//cm.addClient(to_string(0));
 	//pm.addProduct(to_string(0), 0, 0);
 	//pm.addProduct(to_string(1), 1, 1);
 

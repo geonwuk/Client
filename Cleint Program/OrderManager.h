@@ -18,13 +18,12 @@ namespace OM {
 	using Client_ID = unsigned int;
 	using Order_ID = unsigned int;
 
-	struct No_Matching_Product {};
-	struct No_Matching_Client {};
-	struct Already_In_Order_No {};
+	struct No_Matching_Product { Product_ID pid; };
+	struct No_Matching_Client { Client_ID cid; };
+	struct Already_In_Order { Order_ID oid; };
 
 	class OrderManager{
 	public:
-		
 		OrderManager(ClientManager& cm, ProductManager& pm) :cm{ cm }, pm{ pm }{}
 		struct Order {
 			Order_ID order_id;
@@ -36,56 +35,45 @@ namespace OM {
 		const ClientManager& cm;
 		const Order& getOrder(const Order_ID order_id) const;
 		std::ofstream & saveOrders(std::ofstream&) const;
-		std::pair<std::ifstream&, std::vector<Order>> loadOrders(std::ifstream&);
-
-	private:
-		unsigned int order_id = 0;
-		std::multimap<Client_ID, Order*> orders_CID;
-		std::map<Order_ID, Order> orders;
-		std::map<Product_ID, Product> purchased_products;
-		
-	public:
+		std::pair<std::ifstream&, vector<Order>> loadOrders(std::ifstream&);
 		const Product& getPurchasedProducts(const Product_ID pid) const;
-		using OM_itr = decltype(OrderManager::orders)::const_iterator;
-		void addOrder(const Order_ID , const Client_ID , vector<Product_ID>, std::tm);
+		void addOrder(const Order&);
 		std::pair<const unsigned int, bool> addOrder(const Client_ID client_id, vector<unsigned int>);
 		OrderIterator getOrders(const unsigned int client_id) const;
 		OrderIterator getOrders() const;
+	private:
+		unsigned int order_id = 0;
+		std::map<Order_ID, Order> orders;
+		std::multimap<Client_ID, Order*> orders_CID;
+		std::map<Product_ID, Product> purchased_products;
+		
+	public:
+		using OM_itr = decltype(OrderManager::orders)::const_iterator;
 	};
 	struct NoOrder : public OrderManager::Order { };
 	const NoOrder no_order{};
-	using itr_type = OrderManager::OM_itr;
-
+	using Itr_type = OrderManager::OM_itr;
 
 	class OrderIterator {
 	private:
-		struct itr {
-			itr() {} //todo
-			itr_type ptr;
-			itr(itr_type p) :ptr{ p } {}
+		struct Itr {
+			Itr_type ptr;
+			Itr(Itr_type p) :ptr{ p } {}
 			const OrderManager::Order& operator*() const {
 				return ptr->second;
 			}
-			void operator++() {
-				ptr++;
+			Itr_type operator++() {
+				return ++ptr;
 			}
-			bool operator!=(itr b) {
+			bool operator!=(Itr b) {
 				auto re = (ptr) != (b.ptr);
 				return re;
 			}
 		};
 	public:
-		OrderIterator() {}
-		OrderIterator(itr_type b, itr_type e) : st{ b }, ed{ e } {}
-
-		itr st, ed;
-
-		itr begin() {
-			return (st);
-		}
-		itr end() {
-			return (ed);
-		}
+		OrderIterator(Itr_type b, Itr_type e) : st{ b }, ed{ e } {}
+		Itr st, ed;
+		Itr begin() {return (st);}
+		Itr end() {return (ed);}
 	};
-
 }

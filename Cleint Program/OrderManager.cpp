@@ -50,23 +50,23 @@ std::pair<const unsigned int, bool> OrderManager::addOrder(const Client_ID clien
 }
 //TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
 
-void OrderManager::addOrder(const Order_ID loaded_order_id, const Client_ID client_id, vector<unsigned int> product_ids, std::tm date) {
+void OrderManager::addOrder(const Order& order_to_add) {
 	Order order;
 	//üũ
-	auto order_found = orders.find(loaded_order_id);
-	if (order_found == orders.end())
-		throw OM::Already_In_Order_No{};
-	order.order_id = loaded_order_id;
+	auto order_found = orders.find(order_to_add.order_id);
+	if (order_found != orders.end())
+		throw OM::Already_In_Order{ order_to_add.order_id};
+	order.order_id = order_to_add.order_id;
 
-	const Client& c = cm.findClient(client_id);
+	const Client& c = cm.findClient(order_to_add.client_id);
 	if (c == no_client)
-		throw OM::No_Matching_Client{};
-	order.client_id = client_id;
+		throw OM::No_Matching_Client{ order_to_add.client_id};
+	order.client_id = order_to_add.client_id;
 
-	for (auto product_id : product_ids) {
+	for (auto product_id : order_to_add.products) {
 		const Product& found = pm.findProduct(product_id);
 		if (found == no_product)
-			throw OM::NoProduct{};
+			throw OM::No_Matching_Product{product_id};
 		auto itr = purchased_products.find(product_id);
 		if (itr == purchased_products.end()) {
 			auto inserted = purchased_products.emplace(product_id, Product{ found });
@@ -76,8 +76,12 @@ void OrderManager::addOrder(const Order_ID loaded_order_id, const Client_ID clie
 			order.products.emplace_back(itr->second.getId());
 		}
 	}
-	auto inserted_order = orders.emplace(order_id, std::move(order));
-	orders_CID.emplace(client_id, &inserted_order.first->second);
+
+	order.date = order_to_add.date;
+	auto inserted_order = orders.emplace(order_to_add.order_id, std::move(order));
+	order_id = order_to_add.order_id;
+	order_id++;
+	orders_CID.emplace(order_to_add.client_id, &inserted_order.first->second);
 }
 
 
@@ -127,9 +131,10 @@ std::ofstream& OM::OrderManager::saveOrders(std::ofstream& out) const
 std::pair<std::ifstream&, std::vector<OrderManager::Order>> OM::OrderManager::loadOrders(ifstream& in)
 {
 	std::vector<Order> order_vector;
-	vector<Product_ID> products_ids;
+	
 	std::string str;
 	while (getline(in, str)) {
+		vector<Product_ID> products_ids;
 		vector<string> tmp;
 		auto begIdx = str.find_first_not_of(',');
 		while (begIdx != string::npos) {
@@ -146,7 +151,7 @@ std::pair<std::ifstream&, std::vector<OrderManager::Order>> OM::OrderManager::lo
 		
 		unsigned int idx = 3;
 		while (idx<tmp.size()) {
-			products_ids.emplace_back(stoul(tmp[idx]));
+			products_ids.emplace_back(stoul(tmp[idx++]));
 		}
 
 		std::tm time;

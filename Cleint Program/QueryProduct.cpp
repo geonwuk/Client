@@ -4,9 +4,10 @@
 #include  <fstream>
 #include <string>
 #include <sstream>
-
+#include <ctime>
+#include <iomanip>
 using namespace std;
-
+using namespace PM;
 TB::Table QueryProduct::table{ "id","name","price","quantity","date"};
 
 static int getSelection() {
@@ -68,7 +69,7 @@ void QueryProduct::QueryEraseProduct()
 
 void QueryProduct::QueryShowProduct()
 {
-	table.print_header();
+	table.printHeader();
 	auto m = pm.getProducts();
 	for (auto& itr : m) {
 		const Product& p = itr.second;
@@ -78,7 +79,7 @@ void QueryProduct::QueryShowProduct()
 		string time = ss.str();
 		table.print({ std::to_string(p.getId()), p.getName(), to_string(p.getPrice()), to_string(p.getQty()), time });
 	}
-	table.print_tail();
+	table.printTail();
 }
 
 void QueryProduct::QuerySaveProduct(){

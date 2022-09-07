@@ -5,6 +5,7 @@
 #include <iomanip>
 
 using namespace std;
+using namespace CM;
 //std::ostream& operator<< (std::ostream& os, const Client& c);
 TB::Table QueryClient::table{ "id","name","phone number","address" };
 
@@ -47,13 +48,13 @@ void QueryClient::QueryEraseClient()
 
 void QueryClient::QueryShowClient()
 {
-	table.print_header();
+	table.printHeader();
 	auto m = cm.getCleints();
 	for (auto& itr : m) {
 		const Client& c = itr.second;
 		table.print({ std::to_string(c.getId()), c.getName(),c.getPhoneNumber(),c.getAddress()});
 	}
-	table.print_tail();
+	table.printTail();
 }
 
 
@@ -62,7 +63,7 @@ void QueryClient::QuerySaveClient() {
 	cm.saveClients(out);
 }
 
-void QueryClient::QueryLoadClient()const
+void QueryClient::QueryLoadClient()
 {
 	std::ifstream in{ "Clients.txt" };
 	auto pr = cm.loadClients(in);
