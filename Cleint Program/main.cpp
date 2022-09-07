@@ -16,20 +16,18 @@ int main() {
 	ProductManager pm;
 	OrderManager om{ cm,pm };
 
-	QueryClient qc{ cm };//템플릿? Query<Client>,Query<Product>? 컨셉을 이용해 Query를
-	QueryProduct qp{ pm };//상속? Query를 상속받으면 query함수에서 첫번째 인자를 없앨 수 있다
+	QueryClient qc{ cm };
+	QueryProduct qp{ pm };
 	QueryOrder qo{ om };
 
-	Display a1{ "고객관리프로그램"};
+	Display a1{ "고객관리프로그램\n0을 입력하면 뒤로가기\n"};
 	Display b1{ "고객정보관리"};
 	Display b2{ "상품정보관리"};
 	Display b3{ "주문관리" };
 	a1.addChild({ &b1, &b2, &b3 });
-
-	//Querychild vs treechild?
 	
-	Display c1{ "고객추가",  query(qc, &QueryClient::QueryAddClient) };//a1["고객정보관리"].addchild{"고객추가", query(...)}으로 바꾼다
-	Display c2{ "고객삭제", query(qc, &QueryClient::QueryEraseClient) };//qc.query?
+	Display c1{ "고객추가",  query(qc, &QueryClient::QueryAddClient) };
+	Display c2{ "고객삭제", query(qc, &QueryClient::QueryEraseClient) };
 	Display c3{ "고객조회",query(qc, &QueryClient::QueryShowClient) };
 	Display c4{ "고객저장", query(qc, &QueryClient::QuerySaveClient) };
 	Display c5{ "고객로드", query(qc, &QueryClient::QueryLoadClient) };
@@ -48,23 +46,20 @@ int main() {
 	Display e5( "주문로드", query(qo, &QueryOrder::QueryLoadOrder));
 	b3.addChild({ &e1,&e2,&e4,&e5 });
 
-	//cm.addClient(to_string(0));
-	//pm.addProduct(to_string(0), 0, 0);
-	//pm.addProduct(to_string(1), 1, 1);
-
-	cin.exceptions(ios::failbit | ios::badbit);
+	cin.exceptions(ios::failbit | ios::badbit);  //cin오류가 생기면 예외를 던지도록 설정
 
 
 	int go = 1;
 	do {
 		try {
-			go = a1.run();
+			go = a1.run(); //사용자가 종료하면 -1이 리턴되어 while을 빠져나온다
 		}
 		catch (const std::ios_base::failure& ) {
 			cout << "입력 오류입니다. 다시 입력하십시오. 숫자만 입력할 수 있습니다." << endl;
 			continue;
 		}
 	} while (go>=0);
+
 
 	cout << "종료" << endl;
 }

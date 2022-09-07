@@ -6,8 +6,6 @@ using namespace PM;
 using namespace OM;
 using namespace std;
 
-//inline std::ostream& operator<< (std::ostream& os, const tm& p);
-
 TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
 
 static int getSelection() {
@@ -31,10 +29,10 @@ again:
 
 void QueryOrder::QueryAddOrder() {
 	unsigned int client_ID;
-
+	//주문 추가시 누가(client_id) 무엇을(product_id)를 사는지 입력을 받는다.
 	TB::Table client_table{ "client id" };
 	client_table.printHeader();
-	for (auto& itr : om.cm.getCleints()) {
+	for (auto& itr : om.cm.getCleints()) {//
 		const Client& c = itr.second;
 		client_table.print({ to_string(c.getId()) });
 	}
@@ -42,6 +40,12 @@ void QueryOrder::QueryAddOrder() {
 	cout << "구매자 아이디 입력" << endl;
 	cout << "Cleint ID: ";
 	client_ID = getSelection();
+
+	const Client& c = om.cm.findClient(client_ID);
+	if (c == no_client) {
+		cout << "오류: 고객 ID " << client_ID << "가 상품 목록에 없습니다." << endl;
+		return;
+	}
 
 	TB::Table product_table{ "product id" };
 	product_table.printHeader();
@@ -56,7 +60,7 @@ void QueryOrder::QueryAddOrder() {
 
 	vector<unsigned int> products_vector;
 	auto begIdx = product_IDs.find_first_not_of(',');
-	while (begIdx != string::npos) {
+	while (begIdx != string::npos) {// CSV 파일을 파싱해 products_vector에 데이터를 입력한다.
 		auto endIdx = product_IDs.find_first_of(',', begIdx);
 		if (endIdx == string::npos) {
 			endIdx = product_IDs.length();
@@ -71,10 +75,10 @@ void QueryOrder::QueryAddOrder() {
 		}
 		products_vector.emplace_back(pid);
 		begIdx = product_IDs.find_first_not_of(',', endIdx);
-	
-	}
+	}//CSV파일 파싱 완료: products_vector에 데이터 담음
 	int order_id; bool success;
 	std::tie(order_id,success)= om.addOrder(client_ID, products_vector);
+	//om.addOrder는 실패할 경우 order_id에 찾기 실패한 product_id를 리턴한다
 	if (!success) {
 		cout << "오류: 추가할려는 제품 아이디 "<<order_id<< "가 없습니다." << endl;
 		return ;
@@ -88,7 +92,7 @@ void QueryOrder::QueryAddOrder() {
 }
 
 void QueryOrder::QueryShowOrder(){
-	//TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
+	//{ "order id", "client id","product id","product name","price" };
 	table.printHeader();
 	auto orders = om.getOrders();
 	for (auto& order : orders) {
@@ -136,6 +140,7 @@ void QueryOrder::QueryLoadOrder()
 		for (auto product_id : order.products) {
 			const Product& p = om.pm.getProduct(product_id);
 			table.setFields({ to_string(order.order_id), to_string(order.client_id), to_string(product_id), p.getName(), to_string(p.getPrice()) });
+			//불러오기 된 제품들의 테이블 필드를 조사
 		}
 	}
 }

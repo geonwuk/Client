@@ -3,12 +3,12 @@
 #include <iostream>
 using namespace std;
 using namespace TB;
-Table::Field::Field(string name_) : name{ name_ } {
+Table::Field::Field(string name_) : name{ name_ } {	//생성 시 각 필드의 스트링 길이를 저장한다.
 	auto sz = name_.size();
 	max_len = max_len > sz ? max_len : sz;
 }
 
-void Table::Field::check_field(std::string name_){
+void Table::Field::check_field(std::string name_){ //새롭게 원소가 추가될 떄 그 원소의 스트링 길이가 이전의 길이보다 긴 지 확인
 	auto sz = name_.size();
 	max_len = max_len > sz ? max_len : sz;
 }

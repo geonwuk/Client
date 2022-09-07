@@ -9,24 +9,20 @@ using namespace PM;
 
 unsigned int ProductManager::product_id=0;
 
-std::ofstream& operator<< (std::ofstream& out, tm p) {
+std::ofstream& operator<< (std::ofstream& out, tm p) {//시간을 파일로 저장할 때 사용
 	out << std::put_time(&p, "%A %c");
 	return out;
 }
 
-std::ofstream& PM::operator<<(std::ofstream& out, const Product& p)
-{
+std::ofstream& PM::operator<<(std::ofstream& out, const Product& p){ //CSV 파일 포맷으로 저장
 	out << p.getId() << ',' << p.getName() << ',' << p.getPrice() << ',' << p.getQty()<<',';
 	out << p.getDate();
 	return out;
 }
 
-ostream& operator<< (ostream& ss, tm p) {
-	ss << p.tm_year + 1900 << '-' << p.tm_mon + 1 << '-' << p.tm_mday <<" "<<p.tm_hour<<":"<<p.tm_min;
-	return ss;
-}
 
-bool PM::operator== (const Product& p, const NoProduct&) {
+bool PM::operator== (const Product& p, const NoProduct&) { 
+	//findProduct(id)에서 id에 해당하는 상품이 없으면 no_product를 리턴하는데 이를 확인할 때 사용
 	const Product& np{ no_product };
 	if (&p == &np)
 		return true;
@@ -51,8 +47,7 @@ bool ProductManager::eraseProduct(const unsigned int id){
 		return false;
 }
 
-const Product& ProductManager::findProduct(const unsigned int id) const
-{
+const Product& ProductManager::findProduct(const unsigned int id) const{
 	auto it = products.find(id);
 	if (it == products.end()) {
 		return no_product;
@@ -62,13 +57,11 @@ const Product& ProductManager::findProduct(const unsigned int id) const
 	}
 }
 
-const map<unsigned int, Product>& ProductManager::getProducts() const
-{
+const map<unsigned int, Product>& ProductManager::getProducts() const{
 	return products;
 }
 
-const Product& PM::ProductManager::getProduct(const unsigned int id) const
-{
+const Product& PM::ProductManager::getProduct(const unsigned int id) const{
 	auto p = products.find(id);
 	if (p == products.end()) {
 		return no_product;
@@ -78,8 +71,7 @@ const Product& PM::ProductManager::getProduct(const unsigned int id) const
 	}
 }
 
-ofstream& PM::ProductManager::saveProducts(ofstream& out) const
-{
+ofstream& PM::ProductManager::saveProducts(ofstream& out) const{
 	for (const auto& p : products) {
 		out << p.second << endl;
 	}
@@ -90,9 +82,11 @@ std::pair<std::ifstream&, std::vector<Product>> PM::ProductManager::loadProducts
 	vector<Product> product_vector;
 	std::string str;
 	while (getline(in, str)){
-		vector<string> tmp;
+		//한줄씩 실행
+		vector<string> tmp;//, 사이에 있는 값들을 저장할 컨테이너
 		auto begIdx = str.find_first_not_of(',');
-		while (begIdx != string::npos) {
+		while (begIdx != string::npos) {//CSV 파일 포맷 파싱 중
+			//한줄에 있는 , 수 만큼 반복합니다
 			auto endIdx = str.find_first_of(',', begIdx);
 			if (endIdx == string::npos) {
 				endIdx = str.length();
@@ -100,7 +94,7 @@ std::pair<std::ifstream&, std::vector<Product>> PM::ProductManager::loadProducts
 			tmp.emplace_back(str.substr(begIdx, endIdx - begIdx));
 			begIdx = str.find_first_not_of(',', endIdx);
 		}
-
+		//csv파일 값 전달
 		string time_string = tmp[4];
 		unsigned int qty = stoul(tmp[3]);
 		unsigned int price = stoul(tmp[2]);
@@ -109,20 +103,12 @@ std::pair<std::ifstream&, std::vector<Product>> PM::ProductManager::loadProducts
 
 		tm time;
 		istringstream ss{ time_string };
-		ss>>std::get_time(&time, "%a %m/%d/%y %H:%M:%S");
+		ss >> std::get_time(&time, "%a %m/%d/%y %H:%M:%S");	//저장된 시간 파일 포맷
 		product_vector.emplace_back(id, name, price, qty, time);
 	}
 	return  { in, move(product_vector) };
 }
 
-const unsigned int PM::ProductManager::getMaxIndex() const
-{
-	return (--products.end())->first;
+const unsigned int PM::ProductManager::getMaxIndex() const{
+	return (--products.end())->first; //정렬된 맵을 활용
 }
-
-//
-//std::stringstream& PM::operator<<(std::stringstream& out, const Product& p)
-//{
-//	out << p.id << ',' << p.name << ',' << p.price << ',' << p.qty << ',' << p.registered_date;
-//	return out;
-//}

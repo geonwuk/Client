@@ -1,3 +1,4 @@
+
 #include "OrderManager.h"
 #include <fstream>
 #include <iomanip>
@@ -6,10 +7,9 @@
 using namespace std;
 using namespace OM;
 using namespace PM;
-
-const Product& OM::OrderManager::getPurchasedProducts(const Product_ID pid) const
-{
-	auto it = purchased_products.find(pid);
+const Product& OM::OrderManager::getPurchasedProducts(const Product_ID pid) const{
+	//purchased_product는 추가된 주문의 제품정보를 저장하고 있는 멤버
+	auto it = purchased_products.find(pid);	
 	if (it == purchased_products.end()) {
 		return no_product;
 	}
@@ -18,26 +18,25 @@ const Product& OM::OrderManager::getPurchasedProducts(const Product_ID pid) cons
 	}
 }
 
-std::pair<const unsigned int, bool> OrderManager::addOrder(const Client_ID client_id, vector<unsigned int> product_ids)
-{//체크
+std::pair<const unsigned int, bool> OrderManager::addOrder(const Client_ID client_id, vector<unsigned int> product_ids){
 	Order order;
 
-	time_t base_time = time(nullptr);
+	time_t base_time = time(nullptr);			//시간 구하기
 	tm local_time;
 	localtime_s(&local_time, &base_time);
 	order.date = local_time;
 
-	for (auto product_id : product_ids) {
+	for (auto product_id : product_ids) {//사용자가 ,를 이용해 상품을 입력했을 경우 처리 (예: 1,2,3인 경우 상품 번호 1,2,3을 벡터에 담는다)
 		const Product& found = pm.findProduct(product_id);
-		if (found == no_product)
+		if (found == no_product)//제품관리에 없는 제품 번호를 입력하면 오류이다
 			return { product_id,false };
-		auto itr = purchased_products.find(product_id);
-		if (itr == purchased_products.end()) {
+		auto itr = purchased_products.find(product_id); //구매되는 제품이 처음 구매되는지 확인
+		if (itr == purchased_products.end()) {			//만약 처음 구매되는 제품이라면 그 정보를 복사한다(추후에 제품의 정보가 바뀔 수 있으므로 복사)
 			auto inserted = purchased_products.emplace(product_id, Product{ found });
-			order.products.emplace_back(inserted.first->second.getId());
+			order.products.emplace_back(inserted.first->second.getId());//제품 id추가
 		}
 		else {
-			order.products.emplace_back(itr->second.getId());
+			order.products.emplace_back(itr->second.getId());//제품 id추가
 		}
 	}
 	order.order_id = order_id;
@@ -45,30 +44,32 @@ std::pair<const unsigned int, bool> OrderManager::addOrder(const Client_ID clien
 	auto inserted_order = orders.emplace(order_id, std::move(order));
 	orders_CID.emplace(client_id, &inserted_order.first->second);
 
-
 	return {order_id++, true};
 }
 //TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
 
 void OrderManager::addOrder(const Order& order_to_add) {
 	Order order;
-	//체크
+
 	auto order_found = orders.find(order_to_add.order_id);
 	if (order_found != orders.end())
-		throw OM::Already_In_Order{ order_to_add.order_id};
+		throw OM::Already_In_Order{ order_to_add.order_id};	
 	order.order_id = order_to_add.order_id;
+	//주문을 로드할 때 파일에 있는 주문번호가 이미 등록되어 있다면 추가가 불가능하므로 예외를 던짐
 
 	const Client& c = cm.findClient(order_to_add.client_id);
 	if (c == no_client)
 		throw OM::No_Matching_Client{ order_to_add.client_id};
 	order.client_id = order_to_add.client_id;
+	//주문을 로드할 때 만약 파일에 있는 고객 id가 등록되어 있지 않다면 예외를 던짐
 
-	for (auto product_id : order_to_add.products) {
+	for (auto product_id : order_to_add.products) { //
 		const Product& found = pm.findProduct(product_id);
 		if (found == no_product)
 			throw OM::No_Matching_Product{product_id};
-		auto itr = purchased_products.find(product_id);
-		if (itr == purchased_products.end()) {
+		//주문을 로드할 때 만약 파일에 있는 제품 id가 등록되어 있지 않다면 예외를 던짐
+		auto itr = purchased_products.find(product_id); //구매되는 제품이 처음 구매되는지 확인
+		if (itr == purchased_products.end()) {			//만약 처음 구매되는 제품이라면 그 정보를 복사한다(추후에 제품의 정보가 바뀔 수 있으므로 복사)
 			auto inserted = purchased_products.emplace(product_id, Product{ found });
 			order.products.emplace_back(inserted.first->second.getId());
 		}
@@ -77,18 +78,11 @@ void OrderManager::addOrder(const Order& order_to_add) {
 		}
 	}
 
-	order.date = order_to_add.date;
-	auto inserted_order = orders.emplace(order_to_add.order_id, std::move(order));
+	order.date = order_to_add.date;													//파일로부터 읽은 날짜
+	auto inserted_order = orders.emplace(order_to_add.order_id, std::move(order));	//주문을 추가
 	order_id = order_to_add.order_id;
 	order_id++;
 	orders_CID.emplace(order_to_add.client_id, &inserted_order.first->second);
-}
-
-
-OrderIterator OrderManager::getOrders(const unsigned int client_id) const
-{
-	auto tmp2 = orders.equal_range(client_id);
-	return OrderIterator(tmp2.first, tmp2.second);
 }
 
 OrderIterator OrderManager::getOrders() const
@@ -104,7 +98,6 @@ const OrderManager::Order& OrderManager::getOrder(const Order_ID order_id) const
 	else {
 		return o->second;
 	}
-	//체크
 }
 static std::ofstream& operator<< (std::ofstream& out, tm p) {
 	out << std::put_time(&p, "%A %c");
@@ -162,5 +155,3 @@ std::pair<std::ifstream&, std::vector<OrderManager::Order>> OM::OrderManager::lo
 	}
 	return  { in, (order_vector) };
 }
-
-
