@@ -26,15 +26,6 @@ ostream& operator<< (ostream& ss, tm p) {
 	return ss;
 }
 
-//std::ostream& PM::operator<< (std::ostream& os, const Product& p) {
-//	os << "id: " << p.getId() << " ";
-//	os << "Name: " << p.name << " ";
-//	os << "Price: " << p.price << " ";
-//	os << "quantity: " << p.qty << " ";
-//	os << "registered_date: " << p.registered_date << " ";
-//	return os;
-//}//order¿¡¼­ ¾¸
-
 bool PM::operator== (const Product& p, const NoProduct&) {
 	const Product& np{ no_product };
 	if (&p == &np)

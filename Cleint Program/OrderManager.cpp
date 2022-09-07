@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <vector>
 using namespace std;
 using namespace OM;
 using namespace PM;
@@ -18,7 +19,7 @@ const Product& OM::OrderManager::getPurchasedProducts(const Product_ID pid) cons
 }
 
 std::pair<const unsigned int, bool> OrderManager::addOrder(const Client_ID client_id, vector<unsigned int> product_ids)
-{
+{//üũ
 	Order order;
 
 	time_t base_time = time(nullptr);
@@ -33,10 +34,10 @@ std::pair<const unsigned int, bool> OrderManager::addOrder(const Client_ID clien
 		auto itr = purchased_products.find(product_id);
 		if (itr == purchased_products.end()) {
 			auto inserted = purchased_products.emplace(product_id, Product{ found });
-			order.products.emplace_back(&inserted.first->second);
+			order.products.emplace_back(inserted.first->second.getId());
 		}
 		else {
-			order.products.emplace_back(&itr->second);
+			order.products.emplace_back(itr->second.getId());
 		}
 	}
 	order.order_id = order_id;
@@ -47,6 +48,38 @@ std::pair<const unsigned int, bool> OrderManager::addOrder(const Client_ID clien
 
 	return {order_id++, true};
 }
+//TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
+
+void OrderManager::addOrder(const Order_ID loaded_order_id, const Client_ID client_id, vector<unsigned int> product_ids, std::tm date) {
+	Order order;
+	//üũ
+	auto order_found = orders.find(loaded_order_id);
+	if (order_found == orders.end())
+		throw OM::Already_In_Order_No{};
+	order.order_id = loaded_order_id;
+
+	const Client& c = cm.findClient(client_id);
+	if (c == no_client)
+		throw OM::No_Matching_Client{};
+	order.client_id = client_id;
+
+	for (auto product_id : product_ids) {
+		const Product& found = pm.findProduct(product_id);
+		if (found == no_product)
+			throw OM::NoProduct{};
+		auto itr = purchased_products.find(product_id);
+		if (itr == purchased_products.end()) {
+			auto inserted = purchased_products.emplace(product_id, Product{ found });
+			order.products.emplace_back(inserted.first->second.getId());
+		}
+		else {
+			order.products.emplace_back(itr->second.getId());
+		}
+	}
+	auto inserted_order = orders.emplace(order_id, std::move(order));
+	orders_CID.emplace(client_id, &inserted_order.first->second);
+}
+
 
 OrderIterator OrderManager::getOrders(const unsigned int client_id) const
 {
@@ -60,14 +93,14 @@ OrderIterator OrderManager::getOrders() const
 }
 
 const OrderManager::Order& OrderManager::getOrder(const Order_ID order_id) const {
-	//todo: emptyOrder
-	try {
-		orders.at(order_id);
+	auto o = orders.find(order_id);
+	if (o == orders.end()) {
+		return no_order;
 	}
-	catch(std::out_of_range){
-		return OrderManager::Order{};
+	else {
+		return o->second;
 	}
-	return OrderManager::Order{};
+	//üũ
 }
 static std::ofstream& operator<< (std::ofstream& out, tm p) {
 	out << std::put_time(&p, "%A %c");
@@ -77,9 +110,8 @@ static std::ofstream& operator<<(std::ofstream& out, const OrderManager::Order& 
 {
 	out << o.order_id << ',' << o.client_id << ',';
 	out << o.date;
-	for (auto product : o.products) {
-		const Product& p = *product;
-		out << p.getId() << ',' << p.getName() << ',' << p.getPrice();
+	for (auto product_id : o.products) {
+		out << ',' << product_id;
 	}
 	return out;
 }
@@ -94,8 +126,8 @@ std::ofstream& OM::OrderManager::saveOrders(std::ofstream& out) const
 
 std::pair<std::ifstream&, std::vector<OrderManager::Order>> OM::OrderManager::loadOrders(ifstream& in)
 {
-	vector<Order> order_vector;
-	vector<Product*> products;
+	std::vector<Order> order_vector;
+	vector<Product_ID> products_ids;
 	std::string str;
 	while (getline(in, str)) {
 		vector<string> tmp;
@@ -108,22 +140,22 @@ std::pair<std::ifstream&, std::vector<OrderManager::Order>> OM::OrderManager::lo
 			tmp.emplace_back(str.substr(begIdx, endIdx - begIdx));
 			begIdx = str.find_first_not_of(',', endIdx);
 		}
-		unsigned int price = stoul(tmp[5]);
-		string product_name = tmp[4];
-		unsigned int pid = stoul(tmp[3]);
-		string time_string = tmp[2];
-		unsigned int cid = stoul(tmp[1]);
-		unsigned int oid = stoul(tmp[0]);
+		string time_string = tmp[2];//
+		Client_ID cid = stoul(tmp[1]);//
+		Order_ID oid = stoul(tmp[0]);//
+		
+		unsigned int idx = 3;
+		while (idx<tmp.size()) {
+			products_ids.emplace_back(stoul(tmp[idx]));
+		}
 
-		tm time;
+		std::tm time;
 		istringstream ss{ time_string };
 		ss >> std::get_time(&time, "%a %m/%d/%y %H:%M:%S");
-		products.emplace_back(new Product{ pid, product_name, price, 0, tm{} });
+		Order od{ oid, cid, time, products_ids };
+		order_vector.emplace_back(od);
 	}
-
-	order_vector.emplace_back(order_id, cid, move(products), time);
-
-	return  { in, move(order_vector) };
+	return  { in, (order_vector) };
 }
 
 

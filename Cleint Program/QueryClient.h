@@ -3,6 +3,7 @@
 #include <array>
 #include "Table.h"
 
+using namespace CM;
 class QueryClient
 {
 public:

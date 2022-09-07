@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 using namespace std;
+using namespace CM;
 unsigned int ClientManager::client_id = 0;
 
 bool ClientManager::addClient(const string name, const string phone_number, const string address) {
@@ -24,9 +25,13 @@ bool ClientManager::eraseClient(const unsigned int id){
 
 const Client& ClientManager::findClient(const unsigned int id) const
 {
-	//todo: emptyCLient;
 	auto it = clients.find(id);
-	return it->second;
+	if (it == clients.end()) {
+		return no_client;
+	}
+	else {
+		return it->second;
+	}
 }
 
 std::ofstream& operator<<(std::ofstream& out, const Client& c)
@@ -76,4 +81,13 @@ std::pair<std::ifstream&, std::vector<Client>> ClientManager::loadClients(std::i
 const unsigned int ClientManager::getMaxIndex() const
 {
 	return (--clients.end())->first;
+}
+
+bool CM::operator==(const Client& c, const NoClient&)
+{
+	const Client& nc { no_client };
+	if (&c == &nc)
+		return true;
+	else
+		return false;
 }

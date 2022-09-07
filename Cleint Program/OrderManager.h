@@ -4,11 +4,12 @@
 #include <string>
 #include <map>
 #include <memory>
-#include <iosfwd>
+#include <iostream>
 #include <utility>
 #include "ProductManager.h"
 #include "ClientManager.h"
 namespace OM {
+	using namespace CM;
 	using namespace PM;
 	using std::string;
 	using std::vector;
@@ -16,6 +17,11 @@ namespace OM {
 	using Product_ID = unsigned int;
 	using Client_ID = unsigned int;
 	using Order_ID = unsigned int;
+
+	struct No_Matching_Product {};
+	struct No_Matching_Client {};
+	struct Already_In_Order_No {};
+
 	class OrderManager{
 	public:
 		
@@ -23,8 +29,8 @@ namespace OM {
 		struct Order {
 			Order_ID order_id;
 			Client_ID client_id;
-			vector<Product*> products;
 			std::tm date;
+			vector<Product_ID> products;
 		};
 		const ProductManager& pm;
 		const ClientManager& cm;
@@ -41,11 +47,13 @@ namespace OM {
 	public:
 		const Product& getPurchasedProducts(const Product_ID pid) const;
 		using OM_itr = decltype(OrderManager::orders)::const_iterator;
+		void addOrder(const Order_ID , const Client_ID , vector<Product_ID>, std::tm);
 		std::pair<const unsigned int, bool> addOrder(const Client_ID client_id, vector<unsigned int>);
 		OrderIterator getOrders(const unsigned int client_id) const;
 		OrderIterator getOrders() const;
 	};
-
+	struct NoOrder : public OrderManager::Order { };
+	const NoOrder no_order{};
 	using itr_type = OrderManager::OM_itr;
 
 

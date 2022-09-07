@@ -139,25 +139,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientManager.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="OrderManager.cpp" />
-    <ClCompile Include="ProductManager.cpp" />
+    <ClCompile Include="OrderManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="ProductManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="QueryClient.cpp" />
-    <ClCompile Include="QueryOrder.cpp" />
+    <ClCompile Include="QueryOrder.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="QueryProduct.cpp" />
     <ClCompile Include="Table.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Client.h" />
     <ClInclude Include="ClientManager.h" />
     <ClInclude Include="Display.h" />
-    <ClInclude Include="OrderManager.h" />
+    <ClInclude Include="OrderManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="ProductManager.h" />
     <ClInclude Include="QueryClient.h" />
-    <ClInclude Include="QueryOrder.h" />
+    <ClInclude Include="QueryOrder.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="QueryProduct.h" />
     <ClInclude Include="Table.h" />
   </ItemGroup>

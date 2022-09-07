@@ -85,48 +85,19 @@ void QueryOrder::QueryAddOrder() {
 		table.setFields({ to_string(order_id),to_string(client_ID), to_string(product.getId()),product.getName(), to_string(product.getPrice()) });
 	}
 }
-//std::ostream& operator<< (std::ostream& os, const OrderManager::Order& o) {
-//	cout << "Cleint id: " << o.client_id << " ";
-//	cout << "date: " << o.date << " ";
-//
-//	for (const auto& e : o.products) {
-//		cout << e << ",";
-//	}
-//	cout << endl;
-//
-//	return os;
-//}
-void QueryOrder::QueryShowOrder()
-{
+
+void QueryOrder::QueryShowOrder(){
 	//TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
 	table.print_header();
 	auto orders = om.getOrders();
 	for (auto& order : orders) {
 		const OrderManager::Order& o = order;
-		for (auto product : order.products) {
-			const Product& p = *product;
+		for (auto product_id : order.products) {
+			const Product& p = om.getPurchasedProducts(product_id);
 			table.print({ to_string(o.order_id),to_string(o.client_id), to_string(p.getId()), p.getName(), to_string(p.getPrice()) });
 		}
 	}
 	table.print_tail();
-
-
-
-
-	//unsigned int client_id;
-	//cout << "Cleint id: ";
-	//cin >> client_id;
-	//auto orders = om.getOrders(client_id);
-	//int idx = 1;
-
-	//for (auto order : orders) {
-	//	cout << "#" << idx++ << "order" << endl;
-	//	for (auto j : order.products) {
-	//		cout << *j.get() << endl;
-	//	}
-	//	cout << endl;
-	//}
-	//cout << endl;
 }
 
 
@@ -135,20 +106,22 @@ void QueryOrder::QuerySaveOrder(){
 	om.saveOrders(out);
 }
 
+
+//TB::Table QueryOrder::table{ "order id", "client id","product id","product name","price" };
+
 void QueryOrder::QueryLoadOrder()
 {
 	std::ifstream in{ "Orders.txt" };
-	auto pr = om.loadOrders(in);
+	std::vector<OrderManager::Order > loaded_orders;
+	std::tie(std::ignore, loaded_orders) = om.loadOrders(in);
 
-	//for (auto& i : pr.second) {
-	//	om.addOrder(i.getName(), i.getPrice(), i.getQty(), i.getDate());
-	//	unsigned int new_id = pm.getMaxIndex();
-	//	std::stringstream ss;
-	//	auto time_string = i.getDate();
-	//	ss << std::put_time(&time_string, "%A %c");
-	//	string time = ss.str();
-	//	table.setFields({ to_string(new_id),i.getName(), to_string(i.getPrice()), to_string(i.getQty()), time });
-	//}
+	for (auto& order : loaded_orders) {
+		om.addOrder(order.order_id, order.client_id, order.products, order.date);
+		for (auto product_id : order.products) {
+			const Product& p = om.pm.getProduct(product_id);
+			table.setFields({ to_string(order.order_id), to_string(order.client_id), to_string(product_id), p.getName(), to_string(p.getPrice()) });
+		}
+	}
 }
 void QueryOrder::QueryEraseOrder()
 {
